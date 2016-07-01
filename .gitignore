@@ -1,0 +1,7 @@
+/app/config/parameters.yml
+/netbeans-metadata-project/
+/var/
+/vendor/
+/web/bundles/
+/web/config.php
+/composer.lock

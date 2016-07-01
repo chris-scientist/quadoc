@@ -1,0 +1,4 @@
+services:
+#    dechet_equipement.example:
+#        class: DechetEquipementBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

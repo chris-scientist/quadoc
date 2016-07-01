@@ -1,0 +1,19 @@
+dechet_equipement:
+    resource: "@DechetEquipementBundle/Resources/config/routing.yml"
+    prefix:   /
+
+document:
+    resource: "@DocumentBundle/Resources/config/routing.yml"
+    prefix:   /
+
+utilisateur:
+    resource: "@UtilisateurBundle/Resources/config/routing.yml"
+    prefix:   /
+
+rh:
+    resource: "@RHBundle/Resources/config/routing.yml"
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation

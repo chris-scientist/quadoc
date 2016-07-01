@@ -1,0 +1,24 @@
+# src/AppBundle/Resources/translations/messages.fr.yml
+
+app:
+    name: Quadoc
+copyright: INRA
+#
+# Crédits et mentions légales
+#
+credits_rights: Crédits et Mentions Légales
+title_credits: Crédits
+text_team: |
+    Equipe projet : Aurélie Trillaud, Florence Borderes et Christopher Thubert (développeur).
+text_licence: |
+    Le projet est sous licence GPLv3.
+text_technologies: |
+    Ce site est développé en utilisant le framework web PHP Symfony 3, ainsi que les bundles associés à ce framework. 
+    Il exploite également les outils suivants : Bootstrap et jQuery UI.
+title_rights: Mentions légales
+subtitle_rights: Droits et devoirs des utilisateurs
+text_rights: |
+    Les informations diffusées sur les serveurs Inra sont la propriété de l'Inra. Toute copie totale ou partielle ne peut se faire sans l'accord de l'Institut. 
+     
+    Les utilisateurs sont responsables des interrogations qu'ils formulent ainsi que de l'interprétation et de l'utilisation qu'ils font des résultats. Il leur appartient d'en faire un usage conforme aux réglementations en vigueur et aux recommandations de la Commission nationale de l'informatique et des libertés (Cnil) pour les données à caractère personnel. 
+    En particulier, ils doivent savoir que les informations ne doivent être utilisées qu'à des fins strictement professionnelles, que la capture des écrans pour reconstitution ou enrichissement d'une base de données nominatives est contraire à la loi française et donc interdite, ainsi que l'utilisation à des fins commerciales ou publicitaires. Conformément aux dispositions contenues dans la loi n° 78-17 du 6 Janvier 1978 modifiée relative à l’informatique, aux fichiers et aux libertés, vous disposez d’un droit d’accès, de rectification, de modification et de suppression concernant les données qui vous concernent. Vous pouvez faire exercer ce droit en écrivant à aurelie.trillaud@lusignan.inra.fr ou ...

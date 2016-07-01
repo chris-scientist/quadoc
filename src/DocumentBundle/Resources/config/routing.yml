@@ -1,0 +1,3 @@
+document_homepage:
+    path:     /
+    defaults: { _controller: DocumentBundle:Default:index }

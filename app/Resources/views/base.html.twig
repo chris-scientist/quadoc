@@ -1,0 +1,115 @@
+<!-- Copyright 2016 C. Thubert -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>{{ 'app.name'|trans }}</title>
+        {# *********************************************************************
+         # CSS
+         #}
+        <link href="{{ asset('bundles/app/css/bootstrap.min.css') }}" rel="stylesheet">          {# Bootstrap #}
+        <link href="{{ asset('bundles/app/css/bootstrap-theme.min.css') }}" rel="stylesheet">    {# Bootstrap theme #}
+        <link href="{{ asset('bundles/app/css/base.css') }}" rel="stylesheet">                   {# Base #}
+        {% block stylesheets %}{% endblock %}
+        {# *********************************************************************
+         # Icône
+         #}
+        <link rel="icon" type="image/x-icon" href="{{ asset('logo_quadoc_32x32.ico') }}" />
+    </head>
+    <body role="document">
+        {# *********************************************************************
+         # Header
+         #}
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    {#<a class="navbar-brand" href="{{ url('homepage') }}" >{{ 'app.name'|trans }}</a>#}
+                    <a class="navbar-brand" href="{{ url('homepage') }}" style="padding-top: 5px;background-color: #013F4E;" ><img src="{{ asset('logo_quadoc_40x40.png') }}" alt="Quadoc" /></a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+{#                        {% if is_granted("IS_AUTHENTICATED_FULLY or IS_AUTHENTICATED_REMEMBERED") %}#}
+                            <li><a href="#">Base documentaire</a></li>
+                            <li><a href="#about">Non conformité</a></li>
+                            <li><a href="#contact">Management</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Equipements <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" >Inventaire</a></li>
+                                    <li><a href="#">Contrats</a></li>
+                                    <li><a href="#">Interventions</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">RH <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" >Stages</a></li>
+                                    <li><a href="#">Initiales</a></li>
+                                    <li><a href="#">Livret de compétences</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Expérimentation <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" >Cahiers de laboratoire</a></li>
+                                    <li><a href="#">Protocoles</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Déchets <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" >Inventaire</a></li>
+                                    <li><a href="#">Contrats</a></li>
+                                    <li><a href="#">Enlèvements</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Archives <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#" >Base documentaire</a></li>
+                                    <li><a href="#">Management</a></li>
+                                    <li><a href="#">Equipements</a></li>
+                                    <li><a href="#">Cahiers de laboratoire</a></li>
+                                    <li><a href="#">Déchets</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#about">Administration</a></li>
+{#                        {% endif %}#}
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        {# *********************************************************************
+         # Body
+         #}
+        <div class="container theme-showcase" role="main">
+        {% block body %}{% endblock %}
+        </div>
+        {# *********************************************************************
+         # Footer
+         #}
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted">
+                    &copy; {{ 'copyright'|trans }} |
+                    <a href="{{ url('rights') }}" >{{ 'credits_rights'|trans }}</a>
+                </p>
+            </div>
+        </footer>
+        {# *********************************************************************
+         # JavaScripts
+         #}
+        <script src="{{ asset('bundles/app/js/jquery.js') }}"></script>
+        <script src="{{ asset('bundles/app/js/bootstrap.min.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
