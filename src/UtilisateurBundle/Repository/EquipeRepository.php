@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace UtilisateurBundle\Repository;
 
@@ -10,4 +11,12 @@ namespace UtilisateurBundle\Repository;
  */
 class EquipeRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les équipes selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.nom', 'ASC') ;
+    }
 }

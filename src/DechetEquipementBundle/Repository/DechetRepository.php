@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Repository;
 
@@ -10,4 +11,12 @@ namespace DechetEquipementBundle\Repository;
  */
 class DechetRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les déchets selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('d')
+            ->orderBy('d.nom', 'ASC') ;
+    }
 }

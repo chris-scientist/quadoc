@@ -1,0 +1,41 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<a href="{{ url('uti_initiales_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Créer initiales</h2>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Début
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.utilisateur) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.utilisateur, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fin
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.initiales) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.initiales, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+    
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

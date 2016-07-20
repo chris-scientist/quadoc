@@ -1,12 +1,13 @@
 html {
   position: relative;
   min-height: 100%;
-  padding-top: 70px;
+  /*padding-top: 70px;*/
+  padding-top: 50px;
   padding-bottom: 30px;
 }
 
 body {
-  padding-top: 20px;
+  /*padding-top: 20px;*/
   padding-bottom: 20px;
   font-size: 14px;
 }
@@ -16,7 +17,8 @@ code {
 }
 
 body > .container {
-  padding: 60px 15px 0;
+  /*padding: 60px 15px 0;*/
+  padding: 20px 15px 0;
 }
 
 .container .text-muted {

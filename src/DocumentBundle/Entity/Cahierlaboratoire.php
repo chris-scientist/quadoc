@@ -1,8 +1,10 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Cahierlaboratoire
@@ -25,6 +27,8 @@ class Cahierlaboratoire
      * @var string
      *
      * @ORM\Column(name="cla_n_interne", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nInterne;
 
@@ -32,6 +36,8 @@ class Cahierlaboratoire
      * @var string
      *
      * @ORM\Column(name="cla_n_ministere", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nMinistere;
 
@@ -39,6 +45,8 @@ class Cahierlaboratoire
      * @var string
      *
      * @ORM\Column(name="cla_intitule", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $intitule;
 
@@ -46,6 +54,7 @@ class Cahierlaboratoire
      * @var \DateTime
      *
      * @ORM\Column(name="cla_ouvert_le", type="datetime")
+     * @Assert\Date()
      */
     private $ouvertLe;
 
@@ -60,6 +69,8 @@ class Cahierlaboratoire
      * @var string
      *
      * @ORM\Column(name="cla_localisation", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $localisation;
     
@@ -72,6 +83,7 @@ class Cahierlaboratoire
      *  joinColumns={@ORM\JoinColumn(name="cut_cla_id", referencedColumnName="cla_id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="cut_uti_id", referencedColumnName="uti_id")}
      * )
+     * @Assert\NotNull()
      */
     private $utilisateurs;
     
@@ -80,6 +92,7 @@ class Cahierlaboratoire
      * 
      * @ORM\ManyToOne(targetEntity="DocumentBundle\Entity\Support")
      * @ORM\JoinColumn(name="cla_sup_id", nullable=false, referencedColumnName="sup_id")
+     * @Assert\NotNull()
      */
     private $support;
     
@@ -88,8 +101,17 @@ class Cahierlaboratoire
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Equipe")
      * @ORM\JoinColumn(name="cla_eqp_id", nullable=false, referencedColumnName="eqp_id")
+     * @Assert\NotNull()
      */
     private $equipe;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cla_commentaire", type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
+     */
+    private $commentaire;
 
 
     /**
@@ -336,5 +358,29 @@ class Cahierlaboratoire
     public function getEquipe()
     {
         return $this->equipe;
+    }
+
+    /**
+     * Set commentaire
+     *
+     * @param string $commentaire
+     *
+     * @return Cahierlaboratoire
+     */
+    public function setCommentaire($commentaire)
+    {
+        $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Get commentaire
+     *
+     * @return string
+     */
+    public function getCommentaire()
+    {
+        return $this->commentaire;
     }
 }

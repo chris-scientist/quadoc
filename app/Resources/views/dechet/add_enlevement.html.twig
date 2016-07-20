@@ -1,0 +1,103 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('dec_show_enlevement') }}" class="btn btn-default" >&larr; Retour</a>
+
+{% include("dechet/rappel_dec.html.twig") %}
+
+{% if ( dec.historique|length - 1 ) > 0 %}
+    <table class="table table-striped display" id="table_enlevement" >
+        <thead>
+            <tr>
+                <th>Enlevé le</th>
+                <th>Intervenant</th>
+                <th>Quantité</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for enl in dec.historique %}
+            {% if enl.id is not null %}
+                <tr>
+                    <td>{{ enl.enlevele|date('d/m/Y') }}</td>
+                    <td>{{ enl.intervenant.nom ~ " " ~ enl.intervenant.prenom }}</td>
+                    <td>{{ enl.quantite }}</td>
+                    <td>{{ enl.commentaire }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="alert alert-warning" >
+        Pas d'enlèvement déjà associée.
+    </p>
+{% endif %}
+
+<h3>Ajouter un enlèvement</h3>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Enlevé le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.enleve_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.enleve_le) }}
+    </div>
+    {# ------------------------------------------------------------------------- Intervenant
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.intervenant) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.intervenant, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Quantité
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.quantite) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.quantite, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

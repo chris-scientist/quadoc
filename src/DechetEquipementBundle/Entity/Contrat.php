@@ -1,14 +1,18 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Contrat
  *
  * @ORM\Table(name="t_contrat_cnt")
  * @ORM\Entity(repositoryClass="DechetEquipementBundle\Repository\ContratRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Contrat
 {
@@ -25,6 +29,7 @@ class Contrat
      * @var \DateTime
      *
      * @ORM\Column(name="cnt_debut", type="datetime")
+     * @Assert\Date()
      */
     private $debut;
 
@@ -32,6 +37,7 @@ class Contrat
      * @var \DateTime
      *
      * @ORM\Column(name="cnt_fin", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     private $fin;
 
@@ -39,6 +45,7 @@ class Contrat
      * @var string
      *
      * @ORM\Column(name="cnt_numero", type="string", length=32, nullable=true)
+     * @Assert\Length(max=32)
      */
     private $numero;
 
@@ -46,6 +53,7 @@ class Contrat
      * @var string
      *
      * @ORM\Column(name="cnt_cout", type="string", length=32, nullable=true)
+     * @Assert\Length(max=32)
      */
     private $cout;
 
@@ -53,33 +61,55 @@ class Contrat
      * @var string
      *
      * @ORM\Column(name="cnt_commentaire", type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      */
     private $commentaire;
-    
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="cnt_b_fichier", type="boolean")
-     */
-    private $bFichier;
     
     /**
      * @var DechetEquipementBundle\Entity\Prestataire
      * 
      * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Prestataire")
      * @ORM\JoinColumn(name="cnt_pre_id", nullable=false, referencedColumnName="pre_id")
+     * @Assert\NotNull()
      * 
      */
     private $prestataire;
+
+    // Vrai si c'est un contrat déchet, sinon faux si c'est un contrat équipement.
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="cnt_contratdechet", type="boolean")
+     */
+    private $contratdechet;
     
     /**
-     * @var DechetEquipementBundle\Entity\Typecontrat
+     * @var DechetEquipementBundle\Entity\Equipement
      * 
-     * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Typecontrat")
-     * @ORM\JoinColumn(name="cnt_tcn_id", nullable=false, referencedColumnName="tcn_id")
+     * @ORM\ManyToMany(
+     *  targetEntity="DechetEquipementBundle\Entity\Equipement", 
+     *  mappedBy="contratequipement"
+     * )
      */
-    private $typecontrat;
-
+    private $equipements ;
+    
+    /**
+     * @var DechetEquipementBundle\Entity\Dechet
+     * 
+     * @ORM\ManyToMany(
+     *  targetEntity="DechetEquipementBundle\Entity\Dechet", 
+     *  mappedBy="contratdechet"
+     * )
+     */
+    private $dechets ;
+    
+    /**
+     * @Assert\File(
+     *      mimeTypes = {"application/pdf"},
+     *      mimeTypesMessage = "app.err.form.pdfonly"
+     * )
+     */
+    private $fichier;
 
     public function __construct()
     {
@@ -88,6 +118,59 @@ class Contrat
                 ->setNumero(null)
                 ->setCout(null)
                 ->setCommentaire(null) ;
+        
+        $this->setContratdechet(true) ;
+        $this->equipements = new \Doctrine\Common\Collections\ArrayCollection() ;
+        $this->dechets = new \Doctrine\Common\Collections\ArrayCollection() ;
+    }
+    
+    public function getUploadDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadDir = $absolutePath . 'documents/contrats/' ;
+        if( $this->getContratdechet() ) {
+            $uploadDir .= 'dechets/' ;
+        } else {
+            $uploadDir .= 'equipements/' ;
+        }
+        return $uploadDir ;
+    }
+    
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if( is_null($this->fichier) ) {
+            return ;
+        }
+        
+        $filename = $this->getId() . '.pdf' ;
+        $this->fichier->move(
+            $this->getUploadDir(),
+            $filename
+        ) ;
+    }
+    
+    /**
+     * @ORM\PreRemove()
+     */
+    public function preRemoveUpload()
+    {
+        $this->fichier = $this->getUploadDir() . $this->getId() . '.pdf' ;
+    }
+    
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+        $fichier = $this->getFichier() ;
+        if( file_exists($fichier) )
+        {
+            unlink($fichier) ;
+        }
     }
     
     /**
@@ -243,52 +326,108 @@ class Contrat
     {
         return $this->prestataire;
     }
+    
+    public function setFichier(UploadedFile $fichier)
+    {
+        $this->fichier = $fichier ;
+        
+        return $this ;
+    }
+    
+    public function getFichier()
+    {
+        return $this->fichier ;
+    }
 
     /**
-     * Set typecontrat
+     * Set contratdechet
      *
-     * @param \DechetEquipementBundle\Entity\Typecontrat $typecontrat
+     * @param boolean $contratdechet
      *
      * @return Contrat
      */
-    public function setTypecontrat(\DechetEquipementBundle\Entity\Typecontrat $typecontrat)
+    public function setContratdechet($contratdechet)
     {
-        $this->typecontrat = $typecontrat;
+        $this->contratdechet = $contratdechet;
 
         return $this;
     }
 
     /**
-     * Get typecontrat
-     *
-     * @return \DechetEquipementBundle\Entity\Typecontrat
-     */
-    public function getTypecontrat()
-    {
-        return $this->typecontrat;
-    }
-
-    /**
-     * Set bFichier
-     *
-     * @param boolean $bFichier
-     *
-     * @return Contrat
-     */
-    public function setBFichier($bFichier)
-    {
-        $this->bFichier = $bFichier;
-
-        return $this;
-    }
-
-    /**
-     * Get bFichier
+     * Get contratdechet
      *
      * @return boolean
      */
-    public function getBFichier()
+    public function getContratdechet()
     {
-        return $this->bFichier;
+        return $this->contratdechet;
+    }
+
+    /**
+     * Add equipement
+     *
+     * @param \DechetEquipementBundle\Entity\Equipement $equipement
+     *
+     * @return Contrat
+     */
+    public function addEquipement(\DechetEquipementBundle\Entity\Equipement $equipement)
+    {
+        $this->equipements[] = $equipement;
+
+        return $this;
+    }
+
+    /**
+     * Remove equipement
+     *
+     * @param \DechetEquipementBundle\Entity\Equipement $equipement
+     */
+    public function removeEquipement(\DechetEquipementBundle\Entity\Equipement $equipement)
+    {
+        $this->equipements->removeElement($equipement);
+    }
+
+    /**
+     * Get equipements
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEquipements()
+    {
+        return $this->equipements;
+    }
+
+    /**
+     * Add dechet
+     *
+     * @param \DechetEquipementBundle\Entity\Dechet $dechet
+     *
+     * @return Contrat
+     */
+    public function addDechet(\DechetEquipementBundle\Entity\Dechet $dechet)
+    {
+        $this->dechets[] = $dechet;
+
+        return $this;
+    }
+
+    /**
+     * Remove dechet
+     *
+     * @param \DechetEquipementBundle\Entity\Dechet $dechet
+     */
+    public function removeDechet(\DechetEquipementBundle\Entity\Dechet $dechet)
+    {
+        $this->dechets->removeElement($dechet);
+    }
+
+    /**
+     * Get dechets
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDechets()
+    {
+        return $this->dechets;
     }
 }

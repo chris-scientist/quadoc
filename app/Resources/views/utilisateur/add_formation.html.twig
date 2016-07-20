@@ -1,0 +1,127 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<a href="{{ url('uti_livretcompetences_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Rappel utilisateur</h2>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Nom
+     #}
+    <div class="col-md-1" >
+        <strong>Nom</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ utilisateur.nom }} 
+    </div>
+    {# ------------------------------------------------------------------------- Prénom
+     #}
+    <div class="col-md-1" >
+        <strong>Prénom</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ utilisateur.prenom }} 
+    </div>
+</div>
+{# ***************************************************************************** " New line " (listing formation)
+ #}
+<table class="table table-striped display" id="table_fat" >
+    <thead>
+        <tr>
+            <th>Intitulé</th>
+            <th>Mode acquisition</th>
+            <th>Effectué le</th>
+            <th>Durée (h)</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fat in utilisateur.formations %}
+        <tr>
+            <td>{{ fat.intitule }}</td>
+            <td>{{ fat.modeacquisition.nom }}</td>
+            <td>{{ fat.effectuele|date('d/m/Y') }}</td>
+            <td>{{ fat.duree }}</td>
+            <td>{{ fat.description }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Ajouter une formation</h3>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Intitulé
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.intitule) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.intitule, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Mode acquisition
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.modeacquisition) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.modeacquisition, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Effectué le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.effectue_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.effectue_le) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Durée
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.duree) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.duree, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Description
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.description) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.description, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+</div>
+    
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

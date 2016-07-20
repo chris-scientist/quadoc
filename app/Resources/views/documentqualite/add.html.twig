@@ -1,0 +1,169 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('basedoc_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Créer un document</h2>
+{{ form_start(form) }}
+<div class="row" >
+    <div class="col-md-12" >
+        {{ form_errors(form)|trans }}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Titre
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.titre) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.titre, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+   {# <div class="col-md-2" >
+        {{ form_errors(form.titre) }}
+    </div>#}
+    {# ------------------------------------------------------------------------- Domaine
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.domaine) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.domaine, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Référence
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.reference) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.reference, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Forme
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.forme) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.forme, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Equipe(s)
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.equipes) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.equipes) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Interne
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.interne) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.interne, { 'attr' : {'class':'checkbox'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    <div class="col-md-12" >
+        <h3>Créer une version</h3>
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+{% for version in form.versions %}
+<div class="row" >
+    <div class="col-md-6" >
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Numéro de version
+             #}
+            <div class="col-md-3" >
+                {{ form_label(version.n_version) }}
+            </div>
+            <div class="col-md-8" >
+                {{ form_widget(version.n_version, { 'attr' : {'class':'form-control'} }) }}
+            </div>
+        </div>
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Date de diffusion
+             #}
+            <div class="col-md-3" >
+                {{ form_label(version.diffuse_le) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(version.diffuse_le) }}
+            </div>
+        </div>
+        <div class="row" >
+            {# ----------------------------------------------------------------- Date d'arrêt
+             #}
+            <div class="col-md-3" >
+                {{ form_label(version.arret_le) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(version.arret_le) }}
+            </div>
+        </div>
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Fichier
+             #}
+            <div class="col-md-3" >
+                {{ form_label(version.fichier) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(version.fichier) }}
+            </div>
+        </div>
+    </div>
+    {# ------------------------------------------------------------------------- Rédacteur(s)
+     #}
+    <div class="col-md-1" >
+        {{ form_label(version.redacteurs) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(version.redacteurs) }}
+    </div>
+</div>
+{% endfor %}
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

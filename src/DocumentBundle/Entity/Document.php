@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
@@ -22,6 +23,19 @@ abstract class Document
     public function __construct()
     {
         $this->versions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    public function getLastVersion()
+    {
+        $versions = $this->getVersions() ;
+        $lastVersion = $versions->get( count($versions) - 1 ) ;
+        return $lastVersion ;
+    }
+    
+    public function getPathUpload()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        return $absolutePath ;
     }
     
     /**

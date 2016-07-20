@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle;
 

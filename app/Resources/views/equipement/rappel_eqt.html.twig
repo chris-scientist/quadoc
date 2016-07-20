@@ -1,0 +1,135 @@
+{# Copyright 2016 C. Thubert #}
+
+<h2>Rappel équipement</h2>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Nom
+     #}
+    <div class="col-md-1" >
+        <strong>Nom</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.nom }} 
+    </div>
+    {# ------------------------------------------------------------------------- Catégorie
+     #}
+    <div class="col-md-1" >
+        <strong>Catégorie</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.categorie.nom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Marque
+     #}
+    <div class="col-md-1" >
+        <strong>Marque</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.marque.nom }} 
+    </div>
+    {# ------------------------------------------------------------------------- Responsable
+     #}
+    <div class="col-md-1" >
+        <strong>Responsable</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.responsable.nom ~ " " ~ eqt.responsable.prenom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Modèle
+     #}
+    <div class="col-md-1" >
+        <strong>Modèle</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.modele }} 
+    </div>
+    {# ------------------------------------------------------------------------- Equipe
+     #}
+    <div class="col-md-1" >
+        <strong>Equipe</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.equipe.nom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Numéro de série
+     #}
+    <div class="col-md-1" >
+        <strong>Numéro de série</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.nserie }} 
+    </div>
+    {# ------------------------------------------------------------------------- Emplacement
+     #}
+    <div class="col-md-1" >
+        <strong>Emplacement</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.emplacement }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Numéro d'immobilisation
+     #}
+    <div class="col-md-1" >
+        <strong>Numéro d'immobilisation</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.nimmobilisation }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fournisseur
+     #}
+    <div class="col-md-1" >
+        <strong>Fournisseur</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.fournisseur.nom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Acheté le
+     #}
+    <div class="col-md-1" >
+        <strong>Acheté le</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.achetele|date('d/m/Y') }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fin garantie
+     #}
+    <div class="col-md-1" >
+        <strong>Fin de la garantie le</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.fingarantiele|date('d/m/Y') }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Mise en service le
+     #}
+    <div class="col-md-1" >
+        <strong>Mise en service le</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ eqt.miseenservicele|date('d/m/Y') }} 
+    </div>
+</div>

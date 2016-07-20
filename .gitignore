@@ -5,3 +5,11 @@
 /web/bundles/
 /web/config.php
 /composer.lock
+/app/Resources/views/default/tmp.html.twig
+/src/DocumentBundle/DataFixtures/
+/src/DataFixtures/
+/src/UtilisateurBundle/DataFixtures/
+/src/DechetEquipementBundle/DataFixtures/
+/web/upload/clear_all_dir.sh
+/src/RHBundle/DataFixtures/
+/db-rebuilt.sh

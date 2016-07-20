@@ -1,0 +1,91 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<p>
+    <a class="btn btn-default" href="{{ url('cnt_equipement_add') }}" >Créer contrat</a>
+</p>
+{% if (contrats|length) > 0 %}
+<table class="table table-striped display" id="table_cnt" >
+    <thead>
+        <tr>
+            <th>Equipement(s)</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Numéro</th>
+            <th>Coût</th>
+            <th>Prestataire [contact]</th>
+            <th>Commentaire</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cnt in contrats %}
+        <tr>
+            <td>
+                {% for eqt in cnt.equipements %}
+                    {{ eqt.nom }}{% if loop.revindex > 1 %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ cnt.debut|date('d/m/Y') }}</td>
+            <td>{{ cnt.fin|date('d/m/Y') }}</td>
+            <td>{{ cnt.numero }}</td>
+            <td>{{ cnt.cout }}</td>
+            <td>{{ cnt.prestataire.nom ~ " [" ~ cnt.prestataire.contact ~ "]" }}</td>
+            <td>{{ cnt.commentaire }}</td>
+            <td>
+                <a href="{{ url("cnt_dl", {"id": cnt.id}) }}" >
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_cnt').DataTable({
+        "columnDefs": [         /* La première et la dernière colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [7] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+} );
+</script>
+{% endblock %}

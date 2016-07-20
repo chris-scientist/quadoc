@@ -1,6 +1,9 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Repository;
+
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * EquipementRepository
@@ -10,4 +13,19 @@ namespace DechetEquipementBundle\Repository;
  */
 class EquipementRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les équipements selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.nom', 'ASC') ;
+    }
+    /*
+     * Clause WHERE, filtrer les équipements actifs (non réformés).
+     */
+    public function contrainteEquipementActif(QueryBuilder $qb)
+    {
+        return $qb->where("e.reformeLe IS NULL") ;
+    }
 }

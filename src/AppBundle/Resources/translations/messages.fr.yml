@@ -1,7 +1,18 @@
 # src/AppBundle/Resources/translations/messages.fr.yml
+# Copyright 2016 C. Thubert
 
 app:
     name: Quadoc
+    auth:
+        msg: Veuillez saisir vos identifiants
+        login: Identifiant
+        password: Mot de passe
+        rememberme: Se souvenir de moi
+        btn: Se connecter
+    err:
+        form:
+            pdfonly: Merci d'importer un fichier PDF.
+            datesversion: La date d'arrêt doit être supérieur ou égale à la date de diffusion.
 copyright: INRA
 #
 # Crédits et mentions légales

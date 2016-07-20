@@ -1,0 +1,76 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+{# Erreur gérée via Fos #}
+{#{% if error is defined %}
+    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {#<div>{{ error.messageKey }}</div>#}
+{#{% endif %}#}
+
+
+    
+{#<form class="form-signin" action="{{ path("fos_user_security_check") }}" method="post" >#}
+<form class="form-signin" action="{{ path("login_check") }}" method="post" >
+    
+    <h2 class="form-signin-heading">{{ 'app.auth.msg'|trans }}</h2>
+    
+    {#{% if error is defined %}
+    <div>{{ error.message }}</div>
+    {% endif %}#}
+
+   {# {% if error is defined %}
+    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}#}
+    
+    {#{% if error is defined %}
+    <div>{{ error.messageKey }}</div>
+    {% endif %}#}
+    
+    {% if csrf_token is defined %}
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+    {% endif %}
+    
+    <label for="username" class="sr-only">{{ 'app.auth.login'|trans }}</label>
+    <input 
+        type="text" 
+        id="username" 
+        class="form-control" 
+        name="_username"
+        {% if last_username is defined %}
+        value="{{ last_username }}"
+        {% endif %}
+        placeholder="{{ 'app.auth.login'|trans }}" 
+        required 
+        autofocus />
+    
+    <label for="password" class="sr-only">{{ 'app.auth.password'|trans }}</label>
+    <input 
+        type="password" 
+        id="password" 
+        class="form-control" 
+        name="_password"
+        placeholder="{{ 'app.auth.password'|trans }}" 
+        required />
+    
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" value="remember-me" id="remember_me" name="_remember_me" value="on" />
+            {{ 'app.auth.rememberme'|trans }}
+        </label>
+    </div>
+        
+    {#<div class="checkbox">
+        <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
+        <label for="remember_me">{{ 'app.auth.rememberme'|trans }}</label>
+    </div>
+    
+    {#<div class="checkbox">
+        <label>
+            <input type="checkbox" value="remember-me"> {{ 'app.auth.rememberme'|trans }}
+        </label>
+    </div>#}
+    
+    <button class="btn btn-lg btn-primary btn-block" type="submit" id="_submit" name="_submit">{{ 'app.auth.btn'|trans }}</button>
+</form>
+{% endblock %}

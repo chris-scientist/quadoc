@@ -1,0 +1,235 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+{% if (dechets|length) > 0 %}
+<table class="table table-striped display" id="table_dec" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Nb contrats</th>
+            <th>Nb enlèvements</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dec in dechets %}
+        <tr>
+            <td>
+                <a href="#" id="dialog-{{ dec.id }}" >
+                    <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                </a>
+            </td>
+            <td>{{ dec.nom }}</td>
+            <td>{{ dec.description }}</td>
+            <td>{{ dec.contratdechet|length }}</td>
+            <td>{{ dec.historique|length }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-dec" title="Détails déchet" style="display:none;" >
+    <h2>
+        Déchet
+    </h2>
+    <p>Nom : <span id="val-nom" ></span></p>
+    <p>Description : <span id="val-desc" ></span></p>
+    <h2>
+        Contrats 
+        <a id="btn-creer-cnt-ronly" class="btn btn-default" href="{{ url('dec_contrat', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
+        <a id="btn-creer-cnt" class="btn btn-default" href="#" >Créer</a>
+    </h2>
+    <p id="no-contrat" class="alert alert-warning" >
+        Pas d'enregistrement.
+    </p>
+    <a id="pattern-link-dl-cnt" href="{{ url('cnt_dl', {'id': 1}) }}" style="display:none;" >Download contrat</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_cnt" style="display:none;" >
+        <thead>
+            <tr>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Numéro</th>
+                <th>Coût</th>
+                <th>Commentaire</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <h2>
+        Enlèvements 
+        <a id="btn-creer-enl-ronly" class="btn btn-default" href="{{ url('dec_enlevement', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
+        <a id="btn-creer-enl" class="btn btn-default" href="#" >Créer</a>
+    </h2>
+    <p id="no-enlevement" class="alert alert-warning" >
+        Pas d'enregistrement.
+    </p>
+    <a id="pattern-link-dl-enl" href="{{ url('dec_dl_enlevement', {'id': 1}) }}" style="display:none;" >Download enlèvement</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_enl" style="display:none;" >
+        <thead>
+            <tr>
+                <th>Enlevé le</th>
+                <th>Intervenant</th>
+                <th>Quantité</th>
+                <th>Commentaire</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_dec').DataTable({
+        "columnDefs": [         /* La première et la dernière colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [0] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (dechets|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for dec in dechets %}
+        $("#dialog-{{ dec.id }}").click(function (event) {
+            $("#dialog-dec").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("dec_info", {"id": dec.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur le déchet.
+                             #}
+                            $("#val-nom").text( data["nom"] ) ;
+                            $("#val-desc").text( data["desc"] ) ;
+                            {# ................................................. Affichage de l'ensemble des boutons (création).
+                             #}
+                            var btnCreercntRonly = $("#btn-creer-cnt-ronly") ;
+                            var btnCreercnt = $("#btn-creer-cnt") ;
+                            var creercntLink = btnCreercntRonly.attr('href') ;
+                            var ccLink = creercntLink.substr(0, creercntLink.length - 1) ;
+                            ccLink += data[ "id" ] ;
+                            btnCreercnt.attr('href', ccLink) ;
+                            
+                            var btnCreerenlRonly = $("#btn-creer-enl-ronly") ;
+                            var btnCreerenl = $("#btn-creer-enl") ;
+                            var creerenlLink = btnCreerenlRonly.attr('href') ;
+                            var ceLink = creerenlLink.substr(0, creerenlLink.length - 1) ;
+                            ceLink += data[ "id" ] ;
+                            btnCreerenl.attr('href', ceLink) ;
+                            {# ................................................. Ajout des informations sur les contrats du déchet
+                             #}
+                            var contrats = data[ "contrats" ] ;
+                            var nbCnt = contrats.length ;
+                            var tablecntTagname = "#table_cnt" ;
+                            var alertcntTagname = "#no-contrat" ;
+                            var tbodycntTag = $('<tbody></tbody>') ;
+                            var patternDlcntUrl = $("#pattern-link-dl-cnt").attr('href') ;
+                            patternDlcntUrl = patternDlcntUrl.substr(0, patternDlcntUrl.length - 1) ;
+                            $( tablecntTagname ).hide() ;
+                            $( alertcntTagname ).show() ;
+                            $( tablecntTagname + " tbody" ).remove() ;
+                            for( var itCnt = 0 ; itCnt < nbCnt ; itCnt++ )
+                            {
+                                var cnt = contrats[itCnt] ;
+                                var trTag = $('<tr></tr>') ;
+                                var beginUrl = patternDlcntUrl + cnt[ "id" ] ;
+                                trTag.append('<td>' + cnt[ "debut" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "fin" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "numero" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "cout" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "commentaire" ] + '</td>') ;
+                                trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                tbodycntTag.append(trTag) ;
+                            }
+                            $( tablecntTagname).append(tbodycntTag) ;
+                            if( nbCnt )
+                            {
+                                $( tablecntTagname ).show() ;
+                                $( alertcntTagname ).hide() ;
+                            }
+                            {# ................................................. Ajout des informations sur les enlèvements du déchet
+                             #}
+                            var enlevements = data[ "enlevements" ] ;
+                            var nbEnl=  enlevements.length ;
+                            var tableenlTagname = "#table_enl" ;
+                            var alertenlTagname = "#no-enlevement" ;
+                            var tbodyenlTag = $('<tbody></tbody>') ;
+                            var patternDlUrl = $("#pattern-link-dl-enl").attr('href') ;
+                            patternDlUrl = patternDlUrl.substr(0, patternDlUrl.length - 1) ;
+                            $( tableenlTagname ).hide() ;
+                            $( alertenlTagname ).show() ;
+                            $( tableenlTagname + " tbody").remove() ;
+                            for( var itEnl = 0 ; itEnl < nbEnl ; itEnl++ )
+                            {
+                                var enl = enlevements[itEnl] ;
+                                var trTag = $('<tr></tr>') ;
+                                var beginUrl = patternDlUrl + enl[ "id" ] ;
+                                trTag.append('<td>' + enl[ "enleve" ] + '</td>') ;
+                                trTag.append('<td>' + enl[ "intervenant" ] + '</td>') ;
+                                trTag.append('<td>' + enl[ "quantite" ] + '</td>') ;
+                                trTag.append('<td>' + enl[ "commentaire" ] + '</td>') ;
+                                trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                tbodyenlTag.append(trTag) ;
+                            }
+                            $( tableenlTagname ).append(tbodyenlTag) ;
+                            if( nbEnl > 0 )
+                            {
+                                $( tableenlTagname ).show() ;
+                                $( alertenlTagname ).hide() ;
+                            }
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

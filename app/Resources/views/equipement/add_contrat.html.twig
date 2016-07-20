@@ -1,0 +1,125 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('eqt_show_contrat') }}" class="btn btn-default" >&larr; Retour</a>
+
+{% include("equipement/rappel_eqt.html.twig") %}
+
+{% if ( eqt.contratequipement|length - 1 ) > 0 %}
+    <table class="table table-striped display" id="table_interventions" >
+        <thead>
+            <tr>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Numéro</th>
+                <th>Coût</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cnt in eqt.contratequipement %}
+            {% if cnt.id is not null %}
+                <tr>
+                    <td>{{ cnt.debut|date('d/m/Y') }}</td>
+                    <td>{{ cnt.fin|date('d/m/Y') }}</td>
+                    <td>{{ cnt.numero }}</td>
+                    <td>{{ cnt.cout }}</td>
+                    <td>{{ cnt.commentaire }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="alert alert-warning" >
+        Pas de contrat déjà associé.
+    </p>
+{% endif %}
+
+<h3>Ajouter un contrat</h3>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Début
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.debut) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.debut) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fin
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fin) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fin) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Prestataire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.prestataire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.prestataire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Numéro
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.numero) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.numero, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Coût
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.cout) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.cout, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

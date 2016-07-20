@@ -1,0 +1,169 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+{% if route != "archives_cahierlabo" %}
+<p>
+    <a class="btn btn-default" href="{{ url('cahierlabo_add') }}" >Créer cahier de laboratoire</a>
+</p>
+{% endif %}
+{% if (cahierlabo|length) > 0 %}
+<table class="table table-striped display" id="table_cla" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Intitulé</th>
+            <th>Numéro interne</th>
+            <th>Numéro ministère</th>
+            <th>Ouvert le</th>
+            <th>Equipe</th>
+            <th>Utilisateur(s)</th>
+            <th>Support</th>
+            <th>Localisation</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cla in cahierlabo %}
+            <tr>
+                <td>
+                    <a href="#" id="dialog-{{ cla.id }}" >
+                        <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                    </a>
+                </td>
+                <td>{{ cla.intitule }}</td>
+                <td>{{ cla.ninterne }}</td>
+                <td>{{ cla.nministere }}</td>
+                <td>{{ cla.ouvertle|date('d/m/Y') }}</td>
+                <td>{{ cla.equipe.nom }}</td>
+                <td>
+                    {% for uti in cla.utilisateurs %}
+                        {{ uti.nom ~ " " ~ uti.prenom }}{% if loop.revindex > 1 %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ cla.support.nom }}</td>
+                <td>{{ cla.localisation }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-cla" title="Détails du cahier de laboratoire" style="display:none;" >
+    <h2>
+        Cahier de laboratoire 
+        {% if route != 'archives_cahierlabo' %}
+        <a id="btn-archiver-ronly" class="btn btn-default" href="{{ url('cahierlabo_archiver', {'id': 1}) }}" style="display:none;" >Archiver FAKE</a> {# Ne pas afficher ce lien #}
+        <a id="btn-archiver" class="btn btn-default" href="#" >Archiver</a>
+        {% endif %}
+    </h2>
+    <p>Intitulé : <span id="val-intitule" ></span></p>
+    <p>Numéro interne : <span id="val-ninterne" ></span></p>
+    <p>Numéro ministère : <span id="val-nministere" ></span></p>
+    <p>Ouvert le : <span id="val-ouvert" ></span></p>
+    {% if route == 'archives_cahierlabo' %}
+    <p>Fermé le : <span id="val-ferme" ></span></p>
+    {% endif %}
+    <p>Equipe : <span id="val-equipe" ></span></p>
+    <p>Utilisateur(s) : <span id="val-utilisateurs" ></span></p>
+    <p>Support : <span id="val-support" ></span></p>
+    <p>Localisation : <span id="val-localisation" ></span></p>
+    <p>Commentaire : <span id="val-commentaire" ></span></p>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_cla').DataTable({
+        "columnDefs": [         /* La première colonne ne doit pas être triée. */
+            { "orderable": false, "targets": [0] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (cahierlabo|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for cla in cahierlabo %}
+        $("#dialog-{{ cla.id }}").click(function (event) {
+            $("#dialog-cla").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("cahierlabo_info", {"id": cla.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur le protocole.
+                             #}
+                            $("#val-intitule").text( data["intitule"] ) ;
+                            $("#val-ninterne").text( data["ninterne"] ) ;
+                            $("#val-nministere").text( data["nministere"] ) ;
+                            $("#val-ouvert").text( data["ouvert"] ) ;
+                            {% if route == 'archives_cahierlabo' %}
+                            $("#val-ferme").text( data["ferme"] ) ;
+                            {% endif %}
+                            $("#val-equipe").text( data["equipe"] ) ;
+                            $("#val-utilisateurs").text( data["utilisateurs"] ) ;
+                            $("#val-support").text( data["support"] ) ;
+                            $("#val-localisation").text( data["localisation"] ) ;
+                            $("#val-commentaire").text( data["commentaire"] ) ;
+                            {# ................................................. Affichage du bouton "archiver", si on est en dehors des archives.
+                             #}
+                            {% if route != 'archives_cahierlabo' %}
+                            var btnArchiverRonly = $("#btn-archiver-ronly") ;
+                            var btnArchiver = $("#btn-archiver") ;
+                            var archiverLink = btnArchiverRonly.attr('href') ;
+                            var aLink = archiverLink.substr(0, archiverLink.length - 1) ;
+                            aLink += data[ "id" ] ;
+                            btnArchiver.attr('href', aLink) ;
+                            {% endif %}
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

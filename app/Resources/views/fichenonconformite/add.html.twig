@@ -1,0 +1,85 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('fnc_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Créer une fiche de non conformité</h2>
+{{ form_start(form) }}
+<div class="row" >
+    <div class="col-md-12" >
+        {{ form_errors(form)|trans }}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Description
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.description) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.description, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Processus
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.processus) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.processus, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Ouvert le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.ouvert_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.ouvert_le) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fermé le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.ferme_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.ferme_le) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Utilisateurs
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.utilisateurs) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.utilisateurs, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

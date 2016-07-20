@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
@@ -37,6 +38,11 @@ class Categorie
     private $parc;
 
 
+    public function __toString()
+    {
+        return $this->getNom() ;
+    }
+    
     /**
      * Get id
      *

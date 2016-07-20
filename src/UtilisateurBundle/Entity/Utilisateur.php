@@ -1,8 +1,10 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace UtilisateurBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\User;
 
 /**
  * Utilisateur
@@ -10,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="ts_utilisateur_uti")
  * @ORM\Entity(repositoryClass="UtilisateurBundle\Repository\UtilisateurRepository")
  */
-class Utilisateur
+class Utilisateur extends User
 {
     /**
      * @var int
@@ -19,7 +21,7 @@ class Utilisateur
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -38,19 +40,14 @@ class Utilisateur
     /**
      * @var string
      *
-     * @ORM\Column(name="uti_initiale", type="string", length=8, unique=true)
+     * @ORM\Column(name="uti_initiale", type="string", length=8, unique=true, nullable=true)
      */
     private $initiale;
     
     /**
      * @var RHBundle\Entity\Formation
      * 
-     * @ORM\ManyToMany(targetEntity="RHBundle\Entity\Formation")
-     * @ORM\JoinTable(
-     *  name="tj_utilisateurformation_ufa",
-     *  joinColumns={@ORM\JoinColumn(name="ufa_uti_id", referencedColumnName="uti_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="ufa_fat_id", referencedColumnName="fat_id")}
-     * )
+     * @ORM\OneToMany(targetEntity="RHBundle\Entity\Formation", mappedBy="utilisateur")
      */
     private $formations;
     
@@ -62,20 +59,10 @@ class Utilisateur
      */
     private $statut;
     
-    //
-    // ManyToMany qui joue le rôle d'un OneToMany !
-    // 
-    // Cf. http://doctrine-orm.readthedocs.io/projects/doctrine-orm/en/latest/reference/association-mapping.html#one-to-many-unidirectional-with-join-table
-    //
     /**
      * @var RHBundle\Entity\Stage
      * 
-     * @ORM\ManyToMany(targetEntity="RHBundle\Entity\Stage")
-     * @ORM\JoinTable(
-     *  name="tj_utilisateurstage_ust",
-     *  joinColumns={@ORM\JoinColumn(name="ust_uti_id", referencedColumnName="uti_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="ust_stg_id", referencedColumnName="stg_id", unique=true)}
-     * )
+     * @ORM\OneToMany(targetEntity="RHBundle\Entity\Stage", mappedBy="stagiaire")
      */
     private $stages;
 
@@ -85,8 +72,15 @@ class Utilisateur
      */
     public function __construct()
     {
+        parent::__construct(); 
+        
         $this->formations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->stages = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    public function __toString()
+    {
+        return ( $this->getNom() . " " . $this->getPrenom() ) ;
     }
     
     /**

@@ -1,0 +1,117 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('cahierlabo_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Créer un cahier de laboratoire</h2>
+{{ form_start(form) }}
+<div class="row" >
+    <div class="col-md-12" >
+        {{ form_errors(form)|trans }}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Intitulé
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.intitule) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.intitule, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Ouvert le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.ouvert_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.ouvert_le) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Localisation
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.localisation) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.localisation, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Support
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.support) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.support, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Numéro interne
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.ninterne) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.ninterne, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Equipe
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.equipe) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.equipe, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Numéro ministère
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.nministere) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.nministere, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Utilisateur(s)
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.utilisateurs) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.utilisateurs, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

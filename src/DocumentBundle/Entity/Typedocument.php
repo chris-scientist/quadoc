@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
@@ -29,6 +30,11 @@ class Typedocument
     private $nom;
 
 
+    public function __toString()
+    {
+        return $this->getNom() ;
+    }
+    
     /**
      * Get id
      *

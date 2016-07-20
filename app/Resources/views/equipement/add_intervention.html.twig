@@ -1,0 +1,113 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('eqt_show_intervention') }}" class="btn btn-default" >&larr; Retour</a>
+
+{% include("equipement/rappel_eqt.html.twig") %}
+
+{% if ( eqt.historique|length - 1 ) > 0 %}
+    <table class="table table-striped display" id="table_interventions" >
+        <thead>
+            <tr>
+                <th>Opération</th>
+                <th>Opérateur</th>
+                <th>A faire le</th>
+                <th>Effectuée le</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for int in eqt.historique %}
+            {% if int.id is not null %}
+                <tr>
+                    <td>{{ int.operation }}</td>
+                    <td>{{ int.operateur.nom ~ " " ~ int.operateur.prenom }}</td>
+                    <td>{{ int.afairele|date('d/m/Y') }}</td>
+                    <td>{{ int.effectuele|date('d/m/Y') }}</td>
+                    <td>{{ int.commentaire }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="alert alert-warning" >
+        Pas d'intervention déjà associée.
+    </p>
+{% endif %}
+
+<h3>Ajouter une intervention</h3>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Opération
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.operation) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.operation, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Opérateur
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.operateur) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.operateur) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- A faire le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.afaire_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.afaire_le) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Effectue le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.effectue_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.effectue_le) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

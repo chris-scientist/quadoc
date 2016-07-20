@@ -1,0 +1,184 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<p>
+    <a class="btn btn-default" href="{{ url('protocole_add') }}" >Créer protocole</a>
+</p>
+{% if (protocoles|length) > 0 %}
+<table class="table table-striped display" id="table_pto" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Titre</th>
+            <th>Numéro</th>
+            <th>Responsable</th>
+            <th>Equipe</th>
+            <th>Début</th>
+            <th>Numéro de version</th>
+            <th>Diffusé le</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pto in protocoles %}
+            <tr>
+                <td>
+                    <a href="#" id="dialog-{{ pto.id }}" >
+                        <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                    </a>
+                </td>
+                <td>{{ pto.titre }}</td>
+                <td>{{ pto.numero }}</td>
+                <td>{{ pto.responsable.nom ~ " " ~ pto.responsable.prenom }}</td>
+                <td>{{ pto.equipe.nom }}</td>
+                <td>{{ pto.debut|date('d/m/Y') }}</td>
+                <td>{{ pto.lastversion.nversion }}</td>
+                <td>{{ pto.lastversion.diffusele|date('d/m/Y') }}</td>
+                <td>
+                    <a href="{{ url("protocole_download", {"id": pto.id }) }}" >
+                        <span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-pto" title="Détails du protocole" style="display:none;" >
+    <h2>
+        Protocole
+    </h2>
+    <p>Titre : <span id="val-titre" ></span></p>
+    <p>Numéro : <span id="val-numero" ></span></p>
+    <p>Responsable : <span id="val-responsable" ></span></p>
+    <p>Equipe : <span id="val-equipe" ></span></p>
+    <p>Début : <span id="val-debut" ></span></p>
+    <h2>
+        Versions 
+        <a id="btn-creer-pto-ronly" class="btn btn-default" href="{{ url('protocole_version', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
+        <a id="btn-creer-pto" class="btn btn-default" href="#" >Créer</a>
+    </h2>
+    <a id="pattern-link-dl-version" href="{{ url('protocole_version_download', {"id_pto": 1, "id_ver": 2}) }}" style="display:none;" >Download version</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_versions" >
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Rédacteur(s)</th>
+                <th>Diffusée le</th>
+                <th>Arrêtée le</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_pto').DataTable({
+        "columnDefs": [         /* La première et la dernière colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [0,8] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (protocoles|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for pto in protocoles %}
+        $("#dialog-{{ pto.id }}").click(function (event) {
+            $("#dialog-pto").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("protocole_info", {"id": pto.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur le protocole.
+                             #}
+                            $("#val-titre").text( data["titre"] ) ;
+                            $("#val-numero").text( data["numero"] ) ;
+                            $("#val-responsable").text( data["responsable"] ) ;
+                            $("#val-equipe").text( data["equipe"] ) ;
+                            $("#val-debut").text( data["debut"] ) ;
+                            {# ................................................. Gestion du bouton "créer".
+                             #}
+                            var btnCreerptoRonly = $("#btn-creer-pto-ronly") ;
+                            var btnCreerpto = $("#btn-creer-pto") ;
+                            var creerptoLink = btnCreerptoRonly.attr('href') ;
+                            var cpLink = creerptoLink.substr(0, creerptoLink.length - 1) ;
+                            cpLink += data[ "id" ] ;
+                            btnCreerpto.attr('href', cpLink) ;
+                            {# ................................................. Ajout des informations sur les versions du protocole.
+                             #}
+                            $('#table_versions tbody').remove() ;
+                            var dlUrl = $('#pattern-link-dl-version').attr('href') ;
+                            var tbodyTag = $('<tbody></tbody>') ;
+                            var versions = data["versions"] ;
+                            for( var itVersion = 0 ; itVersion < versions.length ; itVersion++ )
+                            {
+                                var beginUrl = dlUrl.substr(0, dlUrl.length - 3) ;
+                                beginUrl += data["id"] + "/" ;
+                                beginUrl += versions[itVersion]["id"] ;
+                                var trTag = $('<tr></tr>') ;
+                                trTag.append('<td>' + versions[itVersion]["numero"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["redacteur"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["diffuse_le"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["arret_le"] + '</td>') ;
+                                trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                tbodyTag.append(trTag) ;
+                            }
+                            $('#table_versions').append(tbodyTag) ;
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

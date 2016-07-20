@@ -1,0 +1,225 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+{% if route != 'archives_basedoc' %}
+<p>
+    <a class="btn btn-default" href="{{ url('basedoc_add') }}" >Créer document</a>
+</p>
+{% endif %}
+{% if (docs|length) > 0 %}
+<table class="table table-striped display" id="table_docqualite" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Titre</th>
+            <th>Référence</th>
+            <th>Equipe(s)</th>
+            <th>Forme</th>
+            <th>Domaine</th>
+            <th>Numéro de version</th>
+            <th>Diffusé le</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doc in docs %}
+        <tr>
+            <td>
+                <a href="#" id="dialog-{{ doc.id }}" >
+                    <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                </a>
+            </td>
+            <td>{{ doc.titre }}</td>
+            <td>{{ doc.reference }}</td>
+            <td>
+                {% for equipe in doc.equipes %}
+                    {{ equipe.nom }}{% if loop.revindex > 1 %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ doc.forme.nom }}</td>
+            <td>{{ doc.domaine.nom }}</td>
+            <td>{{ doc.lastversion.nversion }}</td>
+            <td>{{ doc.lastversion.diffusele|date('d/m/Y') }}</td>
+            <td>
+                <a href="{{ url("basedoc_download", {"id": doc.id }) }}" >
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-doc" title="Détails du document" style="display:none;" >
+    <h2>
+        Document 
+        {% if route != 'archives_basedoc' %}
+        <a id="btn-archiver-ronly" class="btn btn-default" href="{{ url('basedoc_archiver', {'id': 1}) }}" style="display:none;" >Archiver FAKE</a> {# Ne pas afficher ce lien #}
+        <a id="btn-archiver" class="btn btn-default" href="#" >Archiver</a>
+        <a id="btn-supprimer-ronly" class="btn btn-default" href="{{ url('basedoc_remove', {'id': 1}) }}" style="display:none;" >Supprimer FAKE</a> {# Ne pas afficher ce lien #}
+        <a id="btn-supprimer" class="btn btn-default" href="#" >Supprimer</a>
+        {% endif %}
+    </h2>
+    <p>Titre : <span id="val-titre" ></span></p>
+    <p>Référence : <span id="val-ref" ></span></p>
+    {% if route == 'archives_basedoc' %}
+    <p>Archivé le : <span id="val-archive" ></span></p>
+    {% endif %}
+    <p>Forme : <span id="val-forme" ></span></p>
+    <p>Domaine : <span id="val-domaine" ></span></p>
+    <p>Interne : <span id="val-interne" ></span></p>
+    <p>Equipe(s) : <span id="val-equipes" ></span></p>
+    <p>Commentaire : <span id="val-comment" ></span></p>
+    <h2>
+        Versions 
+        {% if route != 'archives_basedoc' %}
+        <a id="btn-creer-ronly" class="btn btn-default" href="{{ url('basedoc_version', {'id': 1}) }}" style="display:none;" >Créer FAKE</a> {# Ne pas afficher ce lien #}
+        <a id="btn-creer" class="btn btn-default" href="#" >Créer</a>
+        {% endif %}
+    </h2>
+    <a id="pattern-link-dl-version" href="{{ url('basedoc_version_download', {"id_doc": 1, "id_ver": 2}) }}" style="display:none;" >Download version</a> {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_versions" >
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Rédacteur(s)</th>
+                <th>Diffusée le</th>
+                <th>Arrêtée le</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_docqualite').DataTable({
+        "columnDefs": [         /* La première et la dernière colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [0,8] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (docs|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for doc in docs %}
+        $("#dialog-{{ doc.id }}").click(function (event) {
+            $("#dialog-doc").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("basedoc_info", {"id": doc.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur le document.
+                             #}
+                            $("#val-titre").text( data["titre"] ) ;
+                            $("#val-ref").text( data["reference"] ) ;
+                            {% if route == 'archives_basedoc' %}
+                            $("#val-archive").text( data["archive_le"] ) ;
+                            {% endif %}
+                            $("#val-interne").text( data["interne"] ) ;
+                            $("#val-forme").text( data["forme"] ) ;
+                            $("#val-domaine").text( data["domaine"] ) ;
+                            $("#val-equipes").text( data["equipe"] ) ;
+                            $("#val-comment").text( data["commentaire"] ) ;
+                            {# ................................................. Si l'utilisateur est dans la base documentaire (pas dans les archives)
+                             #                                                   alors on affiche les boutons d'archivage, de suppression et de création d'une version.
+                             #}
+                            {% if route != 'archives_basedoc' %}
+                            var btnArchiverRonly = $("#btn-archiver-ronly") ;
+                            var btnArchiver = $("#btn-archiver") ;
+                            var archiverLink = btnArchiverRonly.attr('href') ;
+                            var aLink = archiverLink.substr(0, archiverLink.length - 1) ;
+                            aLink += data[ "id" ] ;
+                            btnArchiver.attr('href', aLink) ;
+                            
+                            var btnSupprimerRonly = $("#btn-supprimer-ronly") ;
+                            var btnSupprimer = $("#btn-supprimer") ;
+                            var supprimerLink = btnSupprimerRonly.attr('href') ;
+                            var sLink = supprimerLink.substr(0, supprimerLink.length - 1) ;
+                            sLink += data[ "id" ] ;
+                            btnSupprimer.attr('href', sLink) ;
+                            
+                            var btnCreerRonly = $("#btn-creer-ronly") ;
+                            var btnCreer = $("#btn-creer") ;
+                            var creerLink = btnCreerRonly.attr('href') ;
+                            var cLink = creerLink.substr(0, creerLink.length - 1) ;
+                            cLink += data[ "id" ] ;
+                            btnCreer.attr('href', cLink) ;
+                            {% endif %}
+                            {# ................................................. Ajout des informations sur les versions du document.
+                             #}
+                            $('#table_versions tbody').remove() ;
+                            var dlUrl = $('#pattern-link-dl-version').attr('href') ;
+                            var tbodyTag = $('<tbody></tbody>') ;
+                            var versions = data["versions"] ;
+                            for( var itVersion = 0 ; itVersion < versions.length ; itVersion++ )
+                            {
+                                var beginUrl = dlUrl.substr(0, dlUrl.length - 3) ;
+                                beginUrl += data["id"] + "/" ;
+                                beginUrl += versions[itVersion]["id"] ;
+                                var trTag = $('<tr></tr>') ;
+                                trTag.append('<td>' + versions[itVersion]["numero"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["redacteur"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["diffuse_le"] + '</td>') ;
+                                trTag.append('<td>' + versions[itVersion]["arret_le"] + '</td>') ;
+                                trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                tbodyTag.append(trTag) ;
+                            }
+                            $('#table_versions').append(tbodyTag) ;
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

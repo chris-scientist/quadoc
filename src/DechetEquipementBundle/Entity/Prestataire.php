@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
@@ -34,6 +35,12 @@ class Prestataire
      * @ORM\Column(name="pre_contact", type="string", length=255)
      */
     private $contact;
+
+
+    public function __toString()
+    {
+        return $this->getNom() ;
+    }
 
 
     /**

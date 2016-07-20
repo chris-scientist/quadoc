@@ -1,3 +1,0 @@
-dechet_equipement_homepage:
-    path:     /
-    defaults: { _controller: DechetEquipementBundle:Default:index }

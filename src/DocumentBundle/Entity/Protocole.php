@@ -1,8 +1,10 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Protocole
@@ -25,6 +27,8 @@ class Protocole
      * @var string
      *
      * @ORM\Column(name="pto_titre", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $titre;
 
@@ -32,6 +36,7 @@ class Protocole
      * @var \DateTime
      *
      * @ORM\Column(name="pto_debut", type="datetime")
+     * @Assert\Date()
      */
     private $debut;
     
@@ -39,6 +44,8 @@ class Protocole
      * @var string
      *
      * @ORM\Column(name="pto_numero", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $numero;
     
@@ -56,6 +63,8 @@ class Protocole
      *  joinColumns={@ORM\JoinColumn(name="pve_pto_id", referencedColumnName="pto_id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="pve_ver_id", referencedColumnName="ver_id", unique=true)}
      * )
+     * @ORM\OrderBy({"diffuseLe" = "ASC"})
+     * @Assert\NotNull()
      */
     private $versions;
     
@@ -64,6 +73,7 @@ class Protocole
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Equipe")
      * @ORM\JoinColumn(name="pto_eqp_id", nullable=false, referencedColumnName="eqp_id")
+     * @Assert\NotNull()
      */
     private $equipe;
     
@@ -72,6 +82,7 @@ class Protocole
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur")
      * @ORM\JoinColumn(name="pto_uti_id", nullable=false, referencedColumnName="uti_id")
+     * @Assert\NotNull()
      */
     private $responsable;
 
@@ -82,6 +93,20 @@ class Protocole
     public function __construct()
     {
         $this->versions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    public function getLastVersion()
+    {
+        $versions = $this->getVersions() ;
+        $lastVersion = $versions->get( count($versions) - 1 ) ;
+        return $lastVersion ;
+    }
+    
+    public function getUploadDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadDir = $absolutePath . "documents/protocoles/" ;
+        return $uploadDir ;
     }
     
     /**

@@ -1,0 +1,176 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<p>
+    <a class="btn btn-default" href="{{ url('uti_livretcompetences_add') }}" >Créer un livret</a>
+</p>
+{% if (utilisateurs|length) > 0 %}
+<table class="table table-striped display" id="table_uti" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Nb formations</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for uti in utilisateurs %}
+            {% if uti.formations|length > 0 %}
+            <tr>
+                <td>
+                    <a href="#" id="dialog-{{ uti.id }}" >
+                        <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                    </a>
+                </td>
+                <td>{{ uti.nom }}</td>
+                <td>{{ uti.prenom }}</td>
+                <td>{{ uti.formations|length }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-fat" title="Détails du livret de compétences" style="display:none;" >
+    <h2>
+        Utilisateur
+    </h2>
+    <p>Nom : <span id="val-nom" ></span></p>
+    <p>Prénom : <span id="val-prenom" ></span></p>
+    <h2>
+        Livret de compétences 
+        <a id="btn-creer-fat-ronly" class="btn btn-default" href="{{ url('uti_formation_add', {'id': 1}) }}" style="display:none;" >Ajouter formation FAKE</a>
+        <a id="btn-creer-fat" class="btn btn-default" href="#" >Ajouter formation</a>
+    </h2>
+    <a id="pattern-link-dl-fat" href="{{ url('uti_dl_formation', {'id': 1}) }}" style="display:none;" >Download formation</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_fat" >
+        <thead>
+            <tr>
+                <th>Intitulé</th>
+                <th>Mode acquisition</th>
+                <th>Effectué le</th>
+                <th>Durée (h)</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_uti').DataTable({
+        "columnDefs": [         /* La première colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [0] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (utilisateurs|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for uti in utilisateurs %}
+        {% if uti.formations|length > 0 %}
+        $("#dialog-{{ uti.id }}").click(function (event) {
+            $("#dialog-fat").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("fat_info", {"id": uti.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur l'utilisateur.
+                             #}
+                            $("#val-nom").text( data["nom"] ) ;
+                            $("#val-prenom").text( data["prenom"] ) ;
+                            {# ................................................. Gestion du bouton "ajouter formation".
+                             #}
+                            var btnCreerfatRonly = $("#btn-creer-fat-ronly") ;
+                            var btnCreerfat = $("#btn-creer-fat") ;
+                            var creerfatLink = btnCreerfatRonly.attr('href') ;
+                            var cfLink = creerfatLink.substr(0, creerfatLink.length - 1) ;
+                            cfLink += data[ "id" ] ;
+                            btnCreerfat.attr('href', cfLink) ;
+                            {# ................................................. Ajout des informations sur les formations de l'utilisateur
+                             #}
+                            var formations = data[ "formations" ] ;
+                            var nbFat = formations.length ;
+                            var tablefatTagname = "#table_fat" ;
+                            var tbodyfatTag = $('<tbody></tbody>') ;
+                            var patternDlfatUrl = $("#pattern-link-dl-fat").attr('href') ;
+                            patternDlfatUrl = patternDlfatUrl.substr(0, patternDlfatUrl.length - 1) ;
+                            $( tablefatTagname + " tbody" ).remove() ;
+                            for( var itFat = 0 ; itFat < nbFat ; itFat++ )
+                            {
+                                var fat = formations[itFat] ;
+                                var trTag = $('<tr></tr>') ;
+                                var contentDlTag = "" ;
+                                if( fat[ "bfichier"] ) {
+                                    var beginUrl = patternDlfatUrl + fat[ "id" ] ;
+                                    contentDlTag = '<a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a>' ;
+                                }
+                                trTag.append('<td>' + fat[ "intitule" ] + '</td>') ;
+                                trTag.append('<td>' + fat[ "modeacquisition" ] + '</td>') ;
+                                trTag.append('<td>' + fat[ "effectue" ] + '</td>') ;
+                                trTag.append('<td>' + fat[ "duree" ] + '</td>') ;
+                                trTag.append('<td>' + fat[ "description" ] + '</td>') ;
+                                trTag.append('<td>' + contentDlTag + '</td>') ;
+                                tbodyfatTag.append(trTag) ;
+                            }
+                            $( tablefatTagname).append(tbodyfatTag) ;
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

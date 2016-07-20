@@ -1,14 +1,18 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Equipement
  *
  * @ORM\Table(name="t_equipement_eqt")
  * @ORM\Entity(repositoryClass="DechetEquipementBundle\Repository\EquipementRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Equipement
 {
@@ -24,14 +28,18 @@ class Equipement
     /**
      * @var string
      *
-     * @ORM\Column(name="eqt_descriptif", type="string", length=32)
+     * @ORM\Column(name="eqt_nom", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
-    private $descriptif;
+    private $nom;
 
     /**
      * @var string
      *
      * @ORM\Column(name="eqt_modele", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $modele;
 
@@ -39,6 +47,8 @@ class Equipement
      * @var string
      *
      * @ORM\Column(name="eqt_n_serie", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nSerie;
 
@@ -46,6 +56,7 @@ class Equipement
      * @var \DateTime
      *
      * @ORM\Column(name="eqt_miseenservice_le", type="datetime")
+     * @Assert\Date()
      */
     private $miseenserviceLe;
 
@@ -53,20 +64,24 @@ class Equipement
      * @var \DateTime
      *
      * @ORM\Column(name="eqt_reforme_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     private $reformeLe;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="eqt_fingarentie_le", type="datetime", nullable=true)
+     * @ORM\Column(name="eqt_fingarantie_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
-    private $fingarentieLe;
+    private $fingarantieLe;
 
     /**
      * @var string
      *
      * @ORM\Column(name="eqt_emplacement", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $emplacement;
 
@@ -74,6 +89,7 @@ class Equipement
      * @var \DateTime
      *
      * @ORM\Column(name="eqt_achete_le", type="datetime")
+     * @Assert\Date()
      */
     private $acheteLe;
 
@@ -81,6 +97,7 @@ class Equipement
      * @var string
      *
      * @ORM\Column(name="eqt_n_immobilisation", type="string", length=32, nullable=true, unique=true)
+     * @Assert\Length(max=32)
      */
     private $nImmobilisation;
     
@@ -92,17 +109,26 @@ class Equipement
     private $bFichier;
     
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="eqt_b_photo", type="boolean")
+     */
+    private $bPhoto;
+    
+    /**
      * @var UtilisateurBundle\Entity\Utilisateur
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur")
      * @ORM\JoinColumn(name="eqt_uti_id", referencedColumnName="uti_id")
+     * @Assert\NotNull()
+     * 
      */
     private $responsable;
     
     /**
      * @var DechetEquipementBundle\Entity\Contrat
      * 
-     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Contrat")
+     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Contrat", inversedBy="equipements")
      * @ORM\JoinTable(
      *  name="tj_equipementcontrat_ecn",
      *  joinColumns={@ORM\JoinColumn(name="ecn_eqt_id", referencedColumnName="eqt_id")},
@@ -116,6 +142,7 @@ class Equipement
      * 
      * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Categorie")
      * @ORM\JoinColumn(name="eqt_cat_id", referencedColumnName="cat_id")
+     * @Assert\NotNull()
      */
     private $categorie;
     
@@ -124,6 +151,7 @@ class Equipement
      * 
      * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Marque")
      * @ORM\JoinColumn(name="eqt_mar_id", referencedColumnName="mar_id")
+     * @Assert\NotNull()
      */
     private $marque;
     
@@ -132,6 +160,7 @@ class Equipement
      * 
      * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Fournisseur")
      * @ORM\JoinColumn(name="eqt_fou_id", referencedColumnName="fou_id")
+     * @Assert\NotNull()
      */
     private $fournisseur;
     
@@ -140,27 +169,39 @@ class Equipement
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Equipe")
      * @ORM\JoinColumn(name="eqt_eqp_id", referencedColumnName="eqp_id")
+     * @Assert\NotNull()
      */
     private $equipe;
     
-    //
-    // ManyToMany qui joue le rôle d'un OneToMany !
-    // 
-    // Cf. http://doctrine-orm.readthedocs.io/projects/doctrine-orm/en/latest/reference/association-mapping.html#one-to-many-unidirectional-with-join-table
-    //
     /**
      * @var DechetEquipementBundle\Entity\Intervention
      * 
-     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Intervention")
-     * @ORM\JoinTable(
-     *  name="tj_equipementintervention_ein",
-     *  joinColumns={@ORM\JoinColumn(name="ein_eqt_id", referencedColumnName="eqt_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="ein_int_id", referencedColumnName="int_id", unique=true)}
-     * )
+     * @ORM\OneToMany(targetEntity="DechetEquipementBundle\Entity\Intervention", mappedBy="equipement")
      */
     private $historique;
-
-
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="eqt_caracteristiques", type="string", length=255, nullable=true)
+     */
+    private $caracteristiques;
+    
+    /**
+     * @Assert\File(
+     *      mimeTypes = {"application/pdf"},
+     *      mimeTypesMessage = "app.err.form.pdfonly"
+     * )
+     */
+    private $fichier ;
+    
+    /**
+     * @Assert\Image(
+     *      mimeTypes = {"image/jpeg"}
+     * )
+     */
+    private $photo ;
+    
     /**
      * Constructor
      */
@@ -170,8 +211,89 @@ class Equipement
         $this->historique = new \Doctrine\Common\Collections\ArrayCollection();
         $this
                 ->setReformeLe(null)
-                ->setFingarentieLe(null)
-                ->setNImmobilisation(null) ;
+                ->setFingarantieLe(null)
+                ->setNImmobilisation(null)
+                ->setCaracteristiques(null)
+                ->setBFichier(false)
+                ->setBPhoto(false) ;
+    }
+    
+    public function __toString()
+    {
+        return $this->getNom() ;
+    }
+    
+    public function getUploadFichierDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadFichierDir = $absolutePath . "documents/equipements/" ;
+        return $uploadFichierDir ;
+    }
+    
+    public function getUploadPhotoDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadPhotoDir = $absolutePath . "images/equipements/" ;
+        return $uploadPhotoDir ;
+    }
+    
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if( ! is_null($this->fichier) )
+        {
+            $nomFichier = $this->getId() . '.pdf' ;
+            $this->fichier->move(
+                $this->getUploadFichierDir(),
+                $nomFichier
+            ) ;
+        }
+        
+        if( ! is_null($this->photo) )
+        {
+            $nomPhoto = $this->getId() . '.jpeg' ;
+            $this->photo->move(
+                $this->getUploadPhotoDir(),
+                $nomPhoto
+            ) ;
+        }
+    }
+    
+    /**
+     * @ORM\PreRemove()
+     */
+    public function preRemoveUpload()
+    {
+        if( $this->getBFichier() )
+        {
+            $this->fichier = $this->getUploadFichierDir() . $this->getId() . '.pdf' ;
+        }
+        
+        if( $this->getBPhoto() )
+        {
+            $this->photo = $this->getUploadPhotoDir() . $this->getId() . '.jpeg' ;
+        }
+    }
+    
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+        $fichier = $this->getFichier() ;
+        if( file_exists($fichier) )
+        {
+            unlink($fichier) ;
+        }
+        
+        $photo = $this->getPhoto() ;
+        if( file_exists($photo) )
+        {
+            unlink($photo) ;
+        }
     }
     
     /**
@@ -185,27 +307,27 @@ class Equipement
     }
 
     /**
-     * Set descriptif
+     * Set nom
      *
-     * @param string $descriptif
+     * @param string $nom
      *
      * @return Equipement
      */
-    public function setDescriptif($descriptif)
+    public function setNom($nom)
     {
-        $this->descriptif = $descriptif;
+        $this->nom = $nom;
 
         return $this;
     }
 
     /**
-     * Get descriptif
+     * Get nom
      *
      * @return string
      */
-    public function getDescriptif()
+    public function getNom()
     {
-        return $this->descriptif;
+        return $this->nom;
     }
 
     /**
@@ -305,27 +427,27 @@ class Equipement
     }
 
     /**
-     * Set fingarentieLe
+     * Set fingarantieLe
      *
-     * @param \DateTime $fingarentieLe
+     * @param \DateTime $fingarantieLe
      *
      * @return Equipement
      */
-    public function setFingarentieLe($fingarentieLe)
+    public function setFingarantieLe($fingarantieLe)
     {
-        $this->fingarentieLe = $fingarentieLe;
+        $this->fingarantieLe = $fingarantieLe;
 
         return $this;
     }
 
     /**
-     * Get fingarentieLe
+     * Get fingarantieLe
      *
      * @return \DateTime
      */
-    public function getFingarentieLe()
+    public function getFingarantieLe()
     {
-        return $this->fingarentieLe;
+        return $this->fingarantieLe;
     }
 
     /**
@@ -563,6 +685,7 @@ class Equipement
      */
     public function addHistorique(\DechetEquipementBundle\Entity\Intervention $historique)
     {
+        $historique->setEquipement( $this ) ;
         $this->historique[] = $historique;
 
         return $this;
@@ -610,5 +733,73 @@ class Equipement
     public function getBFichier()
     {
         return $this->bFichier;
+    }
+
+    /**
+     * Set bPhoto
+     *
+     * @param boolean $bPhoto
+     *
+     * @return Equipement
+     */
+    public function setBPhoto($bPhoto)
+    {
+        $this->bPhoto = $bPhoto;
+
+        return $this;
+    }
+
+    /**
+     * Get bPhoto
+     *
+     * @return boolean
+     */
+    public function getBPhoto()
+    {
+        return $this->bPhoto;
+    }
+    
+    public function setFichier(UploadedFile $fichier)
+    {
+        $this->fichier = $fichier ;
+    }
+    
+    public function getFichier()
+    {
+        return $this->fichier ;
+    }
+    
+    public function setPhoto(UploadedFile $photo)
+    {
+        $this->photo = $photo ;
+    }
+    
+    public function getPhoto()
+    {
+        return $this->photo ;
+    }
+
+    /**
+     * Set caracteristiques
+     *
+     * @param string $caracteristiques
+     *
+     * @return Equipement
+     */
+    public function setCaracteristiques($caracteristiques)
+    {
+        $this->caracteristiques = $caracteristiques;
+
+        return $this;
+    }
+
+    /**
+     * Get caracteristiques
+     *
+     * @return string
+     */
+    public function getCaracteristiques()
+    {
+        return $this->caracteristiques;
     }
 }

@@ -1,14 +1,18 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Intervention
  *
  * @ORM\Table(name="t_intervention_int")
  * @ORM\Entity(repositoryClass="DechetEquipementBundle\Repository\InterventionRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Intervention
 {
@@ -25,6 +29,8 @@ class Intervention
      * @var string
      *
      * @ORM\Column(name="int_operation", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $operation;
 
@@ -32,6 +38,7 @@ class Intervention
      * @var \DateTime
      *
      * @ORM\Column(name="int_afaire_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     private $afaireLe;
 
@@ -39,6 +46,7 @@ class Intervention
      * @var string
      *
      * @ORM\Column(name="int_commentaire", type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      */
     private $commentaire;
 
@@ -46,6 +54,7 @@ class Intervention
      * @var \DateTime
      *
      * @ORM\Column(name="int_effectue_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     private $effectueLe;
     
@@ -61,8 +70,26 @@ class Intervention
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur")
      * @ORM\JoinColumn(name="int_uti_id", referencedColumnName="uti_id")
+     * @Assert\NotNull()
      */
     private $operateur;
+    
+    /**
+     * @var DechetEquipementBundle\Entity\Equipement
+     * 
+     * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Equipement", inversedBy="historique")
+     * @ORM\JoinColumn(name="int_eqt_id", referencedColumnName="eqt_id")
+     * @Assert\NotNull()
+     */
+    private $equipement;
+    
+    /**
+     * @Assert\File(
+     *      mimeTypes = {"application/pdf"},
+     *      mimeTypesMessage = "app.err.form.pdfonly"
+     * )
+     */
+    private $fichier;
 
 
     /**
@@ -73,7 +100,54 @@ class Intervention
         $this
                 ->setAfaireLe(null)
                 ->setCommentaire(null)
-                ->setEffectueLe(null) ;
+                ->setEffectueLe(null)
+                ->setBFichier(false) ;
+    }
+    
+    public function getUploadDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadDir = $absolutePath . 'documents/interventions/' ;
+        return $uploadDir ;
+    }
+    
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if( ! is_null($this->fichier) )
+        {
+            $nomFichier = $this->getId() . '.pdf' ;
+            $this->fichier->move(
+                $this->getUploadDir(),
+                $nomFichier
+            ) ;
+        }
+    }
+    
+    /**
+     * @ORM\PreRemove()
+     */
+    public function preRemoveUpload()
+    {
+        if( $this->getBFichier() )
+        {
+            $this->fichier = $this->getUploadDir() . $this->getId() . '.pdf' ;
+        }
+    }
+    
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+        $fichier = $this->getFichier() ;
+        if( file_exists($fichier) )
+        {
+            unlink($fichier) ;
+        }
     }
     
     /**
@@ -228,5 +302,41 @@ class Intervention
     public function getBFichier()
     {
         return $this->bFichier;
+    }
+    
+    public function setFichier(UploadedFile $fichier)
+    {
+        $this->fichier = $fichier ;
+        
+        return $this ;
+    }
+    
+    public function getFichier()
+    {
+        return $this->fichier ;
+    }
+
+    /**
+     * Set equipement
+     *
+     * @param \DechetEquipementBundle\Entity\Equipement $equipement
+     *
+     * @return Intervention
+     */
+    public function setEquipement(\DechetEquipementBundle\Entity\Equipement $equipement = null)
+    {
+        $this->equipement = $equipement;
+
+        return $this;
+    }
+
+    /**
+     * Get equipement
+     *
+     * @return \DechetEquipementBundle\Entity\Equipement
+     */
+    public function getEquipement()
+    {
+        return $this->equipement;
     }
 }

@@ -1,0 +1,340 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+{% if route != 'archives_eqt' %}
+<p>
+    <a class="btn btn-default" href="{{ url('eqt_add') }}" >Créer équipement</a>
+</p>
+{% endif %}
+{% if (equipements|length) > 0 %}
+<table class="table table-striped display" id="table_eqt" >
+    <thead>
+        <tr>
+            <th></th>
+            <th>Nom</th>
+            <th>Equipe</th>
+            <th>Responsable</th>
+            <th>Numéro de série</th>
+            <th>Acheté le</th>
+            <th>Fin garantie</th>
+            <th>Nb contrats</th>
+            <th>Nb interventions</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for eqt in equipements %}
+        <tr>
+            <td>
+                <a href="#" id="dialog-{{ eqt.id }}" >
+                    <span class="glyphicon glyphicon-list" aria-hidden="true" ></span>
+                </a>
+            </td>
+            <td>{{ eqt.nom }}</td>
+            <td>{{ eqt.equipe.nom }}</td>
+            <td>{{ eqt.responsable.nom ~ " " ~ eqt.responsable.prenom }}</td>
+            <td>{{ eqt.nserie }}</td>
+            <td>{{ eqt.achetele|date('d/m/Y') }}</td>
+            <td>{{ eqt.fingarantiele|date('d/m/Y') }}</td>
+            <td>{{ eqt.contratequipement|length }}</td>
+            <td>{{ eqt.historique|length }}</td>
+            <td>
+                {% if eqt.bfichier %}
+                <a href="{{ url("eqt_dl_equipement", {"id": eqt.id }) }}" >
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span>
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{# ----------------------------------------------------------------------------- Pop-in
+ #}
+<div id="dialog-eqt" title="Détails de l'équipement" style="display:none;" >
+    <h2>
+        Equipement 
+        {% if route != 'archives_eqt' %}
+        <a id="btn-reformer-ronly" class="btn btn-default" href="{{ url('eqt_reformer', {'id': 1}) }}" style="display:none;" >Réformer FAKE</a>
+        <a id="btn-reformer" class="btn btn-default" href="#" >Réformer</a>
+        <a id="btn-supprimer-ronly" class="btn btn-default" href="{{ url('eqt_remove', {'id': 1}) }}" style="display:none;" >Supprimer FAKE</a>
+        <a id="btn-supprimer" class="btn btn-default" href="#" >Supprimer</a>
+        {% endif %}
+    </h2>
+    <p style="display:none;" ><img src="" alt="" /></p>
+    <p>Nom : <span id="val-nom" ></span></p>
+    <p>Catégorie : <span id="val-cat" ></span></p>
+    <p>Numéro de série : <span id="val-nserie" ></span></p>
+    <p>Numéro d'immobilisation : <span id="val_nimmo" ></span></p>
+    <p>Modèle : <span id="val-model" ></span></p>
+    <p>Emplacement : <span id="val-emp" ></span></p>
+    <p>Fournisseur : <span id="val-fou" ></span></p>
+    <p>Marque : <span id="val-mar" ></span></p>
+    <p>Responsable : <span id="val-res" ></span></p>
+    <p>Equipe : <span id="val-equipe" ></span></p>
+    <p>Caractéristiques : <span id="val-caracteristiques" ></span></p>
+    <p>Acheté le : <span id="val-achat" ></span></p>
+    <p>Fin garantie : <span id="val-garantie" ></span></p>
+    <p>Mise en service le : <span id="val-miseenservice" ></span></p>
+    {% if route == 'archives_eqt' %}
+    <p>Réformé le : <span id="val-reforme" ></span></p>
+    {% endif %}
+    <a id="btn-dl-ronly" href="{{ url('eqt_dl_equipement', {'id': 1}) }}" style="display:none;" >Fichier FAKE</a>
+    <p id="btn-dl" style="display:none;" ><a href="#" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span> Fichier</a></p>
+    <h2>
+        Contrats 
+        {% if route != 'archives_eqt' %}
+        <a id="btn-creer-cnt-ronly" class="btn btn-default" href="{{ url('eqt_contrat', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
+        <a id="btn-creer-cnt" class="btn btn-default" href="#" >Créer</a>
+        {% endif %}
+    </h2>
+    <p id="no-contrat" class="alert alert-warning" >
+        Pas d'enregistrement.
+    </p>
+    <a id="pattern-link-dl-cnt" href="{{ url('cnt_dl', {'id': 1}) }}" style="display:none;" >Download contrat</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_cnt" style="display:none;" >
+        <thead>
+            <tr>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Numéro</th>
+                <th>Coût</th>
+                <th>Commentaire</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+    <h2>
+        Interventions 
+        {% if route != 'archives_eqt' %}
+        <a id="btn-creer-int-ronly" class="btn btn-default" href="{{ url('eqt_intervention', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
+        <a id="btn-creer-int" class="btn btn-default" href="#" >Créer</a>
+        {% endif %}
+    </h2>
+    <p id="no-intervention" class="alert alert-warning" >
+        Pas d'enregistrement.
+    </p>
+    <a id="pattern-link-dl-int" href="{{ url('eqt_dl_intervention', {'id': 1}) }}" style="display:none;" >Download intervention</a>    {# Ne pas afficher ce lien #}
+    <table class="table table-striped display" id="table_int" style="display:none;" >
+        <thead>
+            <tr>
+                <th>Opération</th>
+                <th>Opérateur</th>
+                <th>A faire le</th>
+                <th>Effectuée le</th>
+                <th>Commentaire</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+{# ----------------------------------------------------------------------------- Pop-in fin
+ #}
+{% else %}
+<p class="alert alert-warning" >
+    Pas d'enregistrement.
+</p>
+{% endif %}
+{% endblock %}
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+<script type="text/javascript" >
+$(document).ready( function () {
+    /*
+     * Rendre le tableau dynamique (tri des colonnes, par exemple).
+     */
+    $('#table_eqt').DataTable({
+        "columnDefs": [         /* La première et la dernière colonnes ne doivent pas être triées. */
+            { "orderable": false, "targets": [0,9] }
+        ],
+        "order": [],            /* Par défaut, aucun tri. */
+        "searching": false,     /* Désactiver la fonction de recherche. */
+        "language": {
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+            "sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ment",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        }
+    });
+    {% if (equipements|length) > 0 %}
+    /*
+     * Gestion des pop-in.
+     */
+    {% for eqt in equipements %}
+        $("#dialog-{{ eqt.id }}").click(function (event) {
+            $("#dialog-eqt").dialog({
+                width: 500,
+                maxHeight: 500,
+                closeText: "Fermer",
+                modal: true,
+                open: function (event, ui) {
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{ url("eqt_info", {"id": eqt.id}) }}',
+                        dataType: "json",
+                        success: function (data) {
+                            {# ................................................. Ajout des informations sur l'équipement.
+                             #}
+                            $("#val-nom").text( data["nom"] ) ;
+                            $("#val-cat").text( data["categorie"] ) ;
+                            $("#val-nserie").text( data["nserie"] ) ;
+                            $("#val-nimmo").text( data["nimmo"] ) ;
+                            $("#val-model").text( data["model"] ) ;
+                            $("#val-emp").text( data["emp"] ) ;
+                            $("#val-fou").text( data["fou"] ) ;
+                            $("#val-mar").text( data["mar"] ) ;
+                            $("#val-res").text( data["res"] ) ;
+                            $("#val-equipe").text( data["equipe"] ) ;
+                            $("#val-caracteristiques").text( data["caracteristiques"] ) ;
+                            $("#val-achat").text( data["achat"] ) ;
+                            $("#val-garantie").text( data["garantie"] ) ;
+                            $("#val-miseenservice").text( data["miseenservice"] ) ;
+                            {% if route == 'archives_eqt' %}
+                            $("#val-reforme").text( data["reforme"] ) ;
+                            {% endif %}
+                            {# ................................................. Si l'utilisateur est sur la page des équipements "actifs" (non réformés)
+                             #                                                   alors on affiche l'ensemble des boutons (création, réforme, etc).
+                             #}
+                            {% if route != 'archives_eqt' %}
+                            var btnReformerRonly = $("#btn-reformer-ronly") ;
+                            var btnReformer = $("#btn-reformer") ;
+                            var reformerLink = btnReformerRonly.attr('href') ;
+                            var rLink = reformerLink.substr(0, reformerLink.length - 1) ;
+                            rLink += data[ "id" ] ;
+                            btnReformer.attr('href', rLink) ;
+                            
+                            var btnSupprimerRonly = $("#btn-supprimer-ronly") ;
+                            var btnSupprimer = $("#btn-supprimer") ;
+                            var supprimerLink = btnSupprimerRonly.attr('href') ;
+                            var sLink = supprimerLink.substr(0, supprimerLink.length - 1) ;
+                            sLink += data[ "id" ] ;
+                            btnSupprimer.attr('href', sLink) ;
+                            
+                            var btnCreercntRonly = $("#btn-creer-cnt-ronly") ;
+                            var btnCreercnt = $("#btn-creer-cnt") ;
+                            var creercntLink = btnCreercntRonly.attr('href') ;
+                            var ccLink = creercntLink.substr(0, creercntLink.length - 1) ;
+                            ccLink += data[ "id" ] ;
+                            btnCreercnt.attr('href', ccLink) ;
+                            
+                            var btnCreerintRonly = $("#btn-creer-int-ronly") ;
+                            var btnCreerint = $("#btn-creer-int") ;
+                            var creerintLink = btnCreerintRonly.attr('href') ;
+                            var ciLink = creerintLink.substr(0, creerintLink.length - 1) ;
+                            ciLink += data[ "id" ] ;
+                            btnCreerint.attr('href', ciLink) ;
+                            {% endif %}
+                            {# ................................................. Afficher le bouton de téléchargement (même dans les "archives").
+                             #}
+                            var btnDlTag = "#btn-dl" ;
+                            $(btnDlTag).hide() ;
+                            if( data[ "bfichier" ] )
+                            {
+                                var btnDlRonly = $("#btn-dl-ronly") ;
+                                var subbtnDlTag = "a" ;
+                                var patternDlLink = $( btnDlRonly ).attr('href') ;
+                                var dLink = patternDlLink.substr(0, patternDlLink.length - 1) ;
+                                dLink += data[ "id" ] ;
+                                $(btnDlTag + " " + subbtnDlTag).attr('href', dLink) ;
+                                $(btnDlTag).show() ;
+                            }
+                            {# ................................................. Ajout des informations sur les contrats de l'équipement
+                             #}
+                            var contrats = data[ "contrats" ] ;
+                            var nbCnt = contrats.length ;
+                            var tablecntTagname = "#table_cnt" ;
+                            var alertcntTagname = "#no-contrat" ;
+                            var tbodycntTag = $('<tbody></tbody>') ;
+                            var patternDlcntUrl = $("#pattern-link-dl-cnt").attr('href') ;
+                            patternDlcntUrl = patternDlcntUrl.substr(0, patternDlcntUrl.length - 1) ;
+                            $( tablecntTagname ).hide() ;
+                            $( alertcntTagname ).show() ;
+                            $( tablecntTagname + " tbody" ).remove() ;
+                            for( var itCnt = 0 ; itCnt < nbCnt ; itCnt++ )
+                            {
+                                var cnt = contrats[itCnt] ;
+                                var trTag = $('<tr></tr>') ;
+                                var beginUrl = patternDlcntUrl + cnt[ "id" ] ;
+                                trTag.append('<td>' + cnt[ "debut" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "fin" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "numero" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "cout" ] + '</td>') ;
+                                trTag.append('<td>' + cnt[ "commentaire" ] + '</td>') ;
+                                trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                tbodycntTag.append(trTag) ;
+                            }
+                            $( tablecntTagname).append(tbodycntTag) ;
+                            if( nbCnt )
+                            {
+                                $( tablecntTagname ).show() ;
+                                $( alertcntTagname ).hide() ;
+                            }
+                            {# ................................................. Ajout des informations sur les interventions de l'équipement
+                             #}
+                            var interventions = data[ "interventions" ] ;
+                            var nbInt = interventions.length ;
+                            var showInt = ( nbInt > 0 ) ;
+                            var tableintTagname = "#table_int" ;
+                            var alertintTagname = "#no-intervention" ;
+                            var tbodyintTag = $('<tbody></tbody>') ;
+                            var patternDlUrl = $("#pattern-link-dl-int").attr('href') ;
+                            patternDlUrl = patternDlUrl.substr(0, patternDlUrl.length - 1) ;
+                            $( tableintTagname ).hide() ;
+                            $( alertintTagname ).show() ;
+                            $( tableintTagname + " tbody").remove() ;
+                            for( var itInt = 0 ; itInt < nbInt ; itInt++ )
+                            {
+                                var int = interventions[itInt] ;
+                                var trTag = $('<tr></tr>') ;
+                                var beginUrl = patternDlUrl + int[ "id" ] ;
+                                trTag.append('<td>' + int[ "operation" ] + '</td>') ;
+                                trTag.append('<td>' + int[ "operateur" ] + '</td>') ;
+                                trTag.append('<td>' + int[ "afaire" ] + '</td>') ;
+                                trTag.append('<td>' + int[ "effectue" ] + '</td>') ;
+                                trTag.append('<td>' + int[ "commentaire" ] + '</td>') ;
+                                if( int[ "bfichier"] )
+                                {
+                                    trTag.append('<td><a href="' + beginUrl + '" ><span class="glyphicon glyphicon-download-alt" aria-hidden="true" ></span></a></td>') ;
+                                }
+                                else
+                                {
+                                    trTag.append('<td></td>') ;
+                                }
+                                tbodyintTag.append(trTag) ;
+                            }
+                            $( tableintTagname ).append(tbodyintTag) ;
+                            if( showInt )
+                            {
+                                $( tableintTagname ).show() ;
+                                $( alertintTagname ).hide() ;
+                            }
+                        }
+                    }) ;
+                }
+            }) ;
+            event.preventDefault();
+        }) ;
+    {% endfor %}
+    {% endif %}
+} );
+</script>
+{% endblock %}

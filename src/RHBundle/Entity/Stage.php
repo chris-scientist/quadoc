@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace RHBundle\Entity;
 
@@ -60,7 +61,7 @@ class Stage
      * @var UtilisateurBundle\Entity\Utilisateur
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur")
-     * @ORM\JoinColumn(name="stg_uti_id", nullable=false, referencedColumnName="uti_id")
+     * @ORM\JoinColumn(name="stg_uti_id_encadrant", nullable=false, referencedColumnName="uti_id")
      */
     private $encadrant;
     
@@ -73,12 +74,13 @@ class Stage
     private $equipe;
     
     /**
-     * @var bool
-     *
-     * @ORM\Column(name="stg_b_rapport", type="boolean")
+     * @var UtilisateurBundle\Entity\Utilisateur
+     * 
+     * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur", inversedBy="stages")
+     * @ORM\JoinColumn(name="stg_uti_id_stagiaire", referencedColumnName="uti_id")
      */
-    private $bRapport;
-
+    private $stagiaire;
+    
 
     /**
      * Get id
@@ -259,26 +261,26 @@ class Stage
     }
 
     /**
-     * Set bRapport
+     * Set stagiaire
      *
-     * @param boolean $bRapport
+     * @param \UtilisateurBundle\Entity\Utilisateur $stagiaire
      *
      * @return Stage
      */
-    public function setBRapport($bRapport)
+    public function setStagiaire(\UtilisateurBundle\Entity\Utilisateur $stagiaire = null)
     {
-        $this->bRapport = $bRapport;
+        $this->stagiaire = $stagiaire;
 
         return $this;
     }
 
     /**
-     * Get bRapport
+     * Get stagiaire
      *
-     * @return boolean
+     * @return \UtilisateurBundle\Entity\Utilisateur
      */
-    public function getBRapport()
+    public function getStagiaire()
     {
-        return $this->bRapport;
+        return $this->stagiaire;
     }
 }

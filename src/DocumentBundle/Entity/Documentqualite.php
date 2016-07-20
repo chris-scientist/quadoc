@@ -1,8 +1,10 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Documentqualite
@@ -25,6 +27,7 @@ class Documentqualite extends Document
      * @var string
      *
      * @ORM\Column(name="dqu_commentaire", type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      */
     private $commentaire;
 
@@ -32,6 +35,8 @@ class Documentqualite extends Document
      * @var string
      *
      * @ORM\Column(name="dqu_reference", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $reference;
 
@@ -39,6 +44,7 @@ class Documentqualite extends Document
      * @var bool
      *
      * @ORM\Column(name="dqu_interne", type="boolean")
+     * @Assert\Type("bool")
      */
     private $interne;
     
@@ -47,6 +53,7 @@ class Documentqualite extends Document
      * 
      * @ORM\ManyToOne(targetEntity="DocumentBundle\Entity\Domaine")
      * @ORM\JoinColumn(name="dqu_dom_id", nullable=false, referencedColumnName="dom_id")
+     * @Assert\NotNull()
      */
     private $domaine;
     
@@ -55,8 +62,22 @@ class Documentqualite extends Document
      * 
      * @ORM\ManyToOne(targetEntity="DocumentBundle\Entity\Forme")
      * @ORM\JoinColumn(name="dqu_for_id", nullable=false, referencedColumnName="for_id")
+     * @Assert\NotNull()
      */
     private $forme;
+    
+    /**
+     * @var UtilisateurBundle\Entity\Equipe
+     * 
+     * @ORM\ManyToMany(targetEntity="UtilisateurBundle\Entity\Equipe")
+     * @ORM\JoinTable(
+     *  name="tj_documentqualiteequipe_dqe",
+     *  joinColumns={@ORM\JoinColumn(name="dqe_dqu_id", referencedColumnName="dqu_id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="dqe_eqp_id", referencedColumnName="eqp_id")}
+     * ) 
+     * @Assert\NotNull()
+     */
+    private $equipes;
     
     // -------------------------------------------------------------------------
     // Attributs (ci-dessous) herités de Document
@@ -66,13 +87,16 @@ class Documentqualite extends Document
      * @var string
      * 
      * @ORM\Column(name="dqu_titre", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     protected $titre; 
     
     /**
      * @var \DateTime
      * 
-     * @ORM\Column(name="dqu_archive_le", type="datetime")
+     * @ORM\Column(name="dqu_archive_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     protected $archiveLe;
     
@@ -87,9 +111,12 @@ class Documentqualite extends Document
      * @ORM\ManyToMany(targetEntity="DocumentBundle\Entity\Version")
      * @ORM\JoinTable(
      *  name="tj_documentqualiteversion_dqv",
-     *  joinColumns={@ORM\JoinColumn(name="dqv_dma_id", referencedColumnName="dqu_id")},
+     *  joinColumns={@ORM\JoinColumn(name="dqv_dqu_id", referencedColumnName="dqu_id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="dqv_ver_id", referencedColumnName="ver_id", unique=true)}
      * )
+     * @ORM\OrderBy({"diffuseLe" = "ASC"})
+     * @Assert\NotNull()
+     * @Assert\Valid()
      */
     protected $versions;
     
@@ -103,8 +130,20 @@ class Documentqualite extends Document
      */
     public function __construct()
     {
+        parent::__construct() ;
+        
+        $this->equipes = new \Doctrine\Common\Collections\ArrayCollection();
+        
         $this
-                ->setCommentaire(null) ;
+                ->setCommentaire(null)
+                ->setInterne(true);
+    }
+    
+    public function getUploadDir()
+    {
+        $dirPath = 'documents/qualite/' ;
+        $dir = $this->getPathUpload() . $dirPath ;
+        return $dir ;
     }
     
     /**
@@ -235,5 +274,39 @@ class Documentqualite extends Document
     public function getForme()
     {
         return $this->forme;
+    }
+
+    /**
+     * Add equipe
+     *
+     * @param \UtilisateurBundle\Entity\Equipe $equipe
+     *
+     * @return Documentqualite
+     */
+    public function addEquipe(\UtilisateurBundle\Entity\Equipe $equipe)
+    {
+        $this->equipes[] = $equipe;
+
+        return $this;
+    }
+
+    /**
+     * Remove equipe
+     *
+     * @param \UtilisateurBundle\Entity\Equipe $equipe
+     */
+    public function removeEquipe(\UtilisateurBundle\Entity\Equipe $equipe)
+    {
+        $this->equipes->removeElement($equipe);
+    }
+
+    /**
+     * Get equipes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEquipes()
+    {
+        return $this->equipes;
     }
 }

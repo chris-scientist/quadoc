@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Repository;
 
@@ -10,4 +11,12 @@ namespace DocumentBundle\Repository;
  */
 class SupportRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les support selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.nom', 'ASC') ;
+    }
 }

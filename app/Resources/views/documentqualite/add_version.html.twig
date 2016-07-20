@@ -1,0 +1,198 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('basedoc_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Rappel document</h2>
+{{ form_start(form) }}
+<div class="row" >
+    <div class="col-md-12" >
+        {{ form_errors(form)|trans }}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Titre
+     #}
+    <div class="col-md-1" >
+        <strong>Titre</strong>
+    </div>
+    <div class="col-md-5" > 
+        {{ doc.titre }}
+    </div>
+    {# ------------------------------------------------------------------------- Domaine
+     #}
+    <div class="col-md-1" >
+        <strong>Domaine</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ doc.domaine.nom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Référence
+     #}
+    <div class="col-md-1" >
+        <strong>Réference</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ doc.reference }} 
+    </div>
+    {# ------------------------------------------------------------------------- Forme
+     #}
+    <div class="col-md-1" >
+        <strong>Forme</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ doc.forme.nom }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        <strong>Commentaire</strong>
+    </div>
+    <div class="col-md-5" >
+        {{ doc.commentaire }} 
+    </div>
+    {# ------------------------------------------------------------------------- Equipe(s)
+     #}
+    <div class="col-md-1" >
+        <strong>Equipe(s)</strong>
+    </div>
+    <div class="col-md-5" >
+        {% for equipe in doc.equipes %}
+            {{ equipe.nom }}{% if loop.revindex > 1 %}, {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Interne
+     #}
+    <div class="col-md-1" >
+        <strong>Interne</strong>
+    </div>
+    <div class="col-md-5" >
+        {% if doc.interne %}
+            Oui
+        {% else %}
+            Non
+        {% endif %}
+    </div>
+</div>
+{# ***************************************************************************** " New line "
+ #}
+<table class="table table-striped display" id="table_versions" >
+    <thead>
+        <tr>
+            <th>Numéro de version</th>
+            <th>Rédacteur(s)</th>
+            <th>Diffusée le</th>
+            <th>Arrêtée le</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for version in doc.versions %}
+        {% if version.id is not null %}
+        <tr>
+            <td>{{ version.nversion }}</td>
+            <td>
+                {% for redacteur in version.redacteurs %}
+                    {{ redacteur.nom ~ " " ~ redacteur.prenom }}{% if loop.revindex > 1 %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ version.diffusele|date('d/m/Y') }}</td>
+            <td>{{ version.arretle|date('d/m/Y') }}</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    <div class="col-md-12" >
+        <h3>Ajouter une version</h3>
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    <div class="col-md-6" >
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Numéro de version
+             #}
+            <div class="col-md-3" >
+                {{ form_label(form.n_version) }}
+            </div>
+            <div class="col-md-8" >
+                {{ form_widget(form.n_version, { 'attr' : {'class':'form-control'} }) }}
+            </div>
+        </div>
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Date de diffusion
+             #}
+            <div class="col-md-3" >
+                {{ form_label(form.diffuse_le) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(form.diffuse_le) }}
+            </div>
+        </div>
+        <div class="row" >
+            {# ----------------------------------------------------------------- Date d'arrêt
+             #}
+            <div class="col-md-3" >
+                {{ form_label(form.arret_le) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(form.arret_le) }}
+            </div>
+        </div>
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Fichier
+             #}
+            <div class="col-md-3" >
+                {{ form_label(form.fichier) }}
+            </div>
+            <div class="col-md-15" >
+                {{ form_widget(form.fichier) }}
+            </div>
+        </div>
+    </div>
+    {# ------------------------------------------------------------------------- Rédacteur(s)
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.redacteurs) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.redacteurs) }}
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

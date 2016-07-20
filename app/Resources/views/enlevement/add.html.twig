@@ -1,0 +1,84 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<a href="{{ url('dec_show_enlevement') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h3>Ajouter un enlèvement</h3>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Déchet
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.dechet) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.dechet, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Enlevé le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.enleve_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.enleve_le) }}
+    </div>
+    {# ------------------------------------------------------------------------- Intervenant
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.intervenant) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.intervenant, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Quantité
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.quantite) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.quantite, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Fichier
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.fichier) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.fichier) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Commentaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.commentaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.commentaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

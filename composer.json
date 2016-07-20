@@ -29,7 +29,6 @@
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "^2.0",
         "friendsofsymfony/user-bundle": "dev-master",
-        "fr3d/ldap-bundle": "dev-develop",
         "doctrine/doctrine-fixtures-bundle": "dev-master"
     },
     "require-dev": {

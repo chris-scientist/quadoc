@@ -1,4 +1,5 @@
-<!-- Copyright 2016 C. Thubert -->
+{# Copyright 2016 C. Thubert #}
+{% set route = app.request.attributes.get('_route') %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,6 +13,10 @@
          #}
         <link href="{{ asset('bundles/app/css/bootstrap.min.css') }}" rel="stylesheet">          {# Bootstrap #}
         <link href="{{ asset('bundles/app/css/bootstrap-theme.min.css') }}" rel="stylesheet">    {# Bootstrap theme #}
+        <link href="{{ asset('bundles/app/css/dataTables.bootstrap.css') }}" rel="stylesheet">   {# DataTables Bootstrap #}
+        <link href="{{ asset('bundles/app/css/responsive.bootstrap.css') }}" rel="stylesheet">   {# Responsive Bootstrap (DataTable) #}
+        <link href="{{ asset('bundles/app/css/jquery-ui.css') }}" rel="stylesheet">              {# jQuery UI #}
+        <link href="{{ asset('bundles/app/css/jquery-ui.theme.css') }}" rel="stylesheet">        {# jQuery UI Theme #}
         <link href="{{ asset('bundles/app/css/base.css') }}" rel="stylesheet">                   {# Base #}
         {% block stylesheets %}{% endblock %}
         {# *********************************************************************
@@ -37,53 +42,69 @@
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-{#                        {% if is_granted("IS_AUTHENTICATED_FULLY or IS_AUTHENTICATED_REMEMBERED") %}#}
-                            <li><a href="#">Base documentaire</a></li>
-                            <li><a href="#about">Non conformité</a></li>
-                            <li><a href="#contact">Management</a></li>
-                            <li class="dropdown">
+{#                        {% if is_granted("IS_AUTHENTICATED_FULLY or IS_AUTHENTICATED_REMEMBERED or ROLE_USER") %}#}
+                        {% if is_granted("ROLE_USER") %}
+                            <li {% if route == 'basedoc_add' or route == 'basedoc_index' or route == 'basedoc_version' %}class="active"{% endif %} >
+                                <a href="{{ url('basedoc_index') }}" >Base documentaire</a>
+                            </li>
+                            <li {% if route == 'fnc_index' or route == 'fnc_add' %}class="active"{% endif %} >
+                                <a href="{{ url('fnc_index') }}">Non conformité</a>
+                            </li>
+                            <li {% if route == 'management_index' or route == 'management_add' or route == 'management_version' %}class="active"{% endif %} >
+                                <a href="{{ url('management_index') }}">Management</a>
+                            </li>
+                            <li class="dropdown{% if route == 'eqt_index' or route == 'eqt_add' or route == 'eqt_show_intervention' or route == 'eqt_show_contrat' %} active{% endif %}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Equipements <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#" >Inventaire</a></li>
-                                    <li><a href="#">Contrats</a></li>
-                                    <li><a href="#">Interventions</a></li>
+                                    <li {% if route == 'eqt_index' %}class="active"{% endif %} ><a href="{{ url('eqt_index') }}" >Inventaire</a></li>
+                                    <li {% if route == 'eqt_show_contrat' %}class="active"{% endif %} ><a href="{{ url('eqt_show_contrat') }}">Contrats</a></li>
+                                    <li {% if route == 'eqt_show_intervention' %}class="active"{% endif %} ><a href="{{ url('eqt_show_intervention') }}">Interventions</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown{% if route == 'uti_initiales_index' or route == 'uti_initiales_add' 
+                                                    or route == 'uti_stage_index' or route == 'uti_stage_add'
+                                                    or route == 'uti_livretcompetences_index' or route == 'uti_livretcompetences_add' or route == 'uti_formation_add' %} active{% endif %}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">RH <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#" >Stages</a></li>
-                                    <li><a href="#">Initiales</a></li>
-                                    <li><a href="#">Livret de compétences</a></li>
+                                    <li {% if route == 'uti_stage_index' %}class="active"{% endif %} ><a href="{{ url('uti_stage_index') }}" >Stages</a></li>
+                                    <li {% if route == 'uti_initiales_index' %}class="active"{% endif %} ><a href="{{ url('uti_initiales_index') }}">Initiales</a></li>
+                                    <li {% if route == 'uti_livretcompetences_index' %}class="active"{% endif %} ><a href="{{ url('uti_livretcompetences_index') }}">Livret de compétences</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown{% if route == 'protocole_index' or route == 'protocole_add' or route == 'protocole_version'
+                                                    or route == 'cahierlabo_index' or route == 'cahierlabo_add' %} active{% endif %}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Expérimentation <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#" >Cahiers de laboratoire</a></li>
-                                    <li><a href="#">Protocoles</a></li>
+                                    <li {% if route == 'cahierlabo_index' %}class="active"{% endif %} ><a href="{{ url('cahierlabo_index') }}" >Cahiers de laboratoire</a></li>
+                                    <li {% if route == 'protocole_index' %}class="active"{% endif %} ><a href="{{ url('protocole_index') }}">Protocoles</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown{% if route == 'dec_index' or route == 'dec_show_contrat' or route == 'dec_show_enlevement' %} active{% endif %}">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Déchets <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#" >Inventaire</a></li>
-                                    <li><a href="#">Contrats</a></li>
-                                    <li><a href="#">Enlèvements</a></li>
+                                    <li {% if route == 'dec_index' %}class="active"{% endif %} ><a href="{{ url('dec_index') }}" >Inventaire</a></li>
+                                    <li {% if route == 'dec_show_contrat' %}class="active"{% endif %} ><a href="{{ url('dec_show_contrat') }}">Contrats</a></li>
+                                    <li {% if route == 'dec_show_enlevement' %}class="active"{% endif %} ><a href="{{ url('dec_show_enlevement') }}">Enlèvements</a></li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="dropdown{% if route == 'archives_basedoc' or route == 'archives_management' 
+                                                    or route == 'archives_eqt' or route == 'archives_cahierlabo' %} active{% endif %}" >
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Archives <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="#" >Base documentaire</a></li>
-                                    <li><a href="#">Management</a></li>
-                                    <li><a href="#">Equipements</a></li>
-                                    <li><a href="#">Cahiers de laboratoire</a></li>
+                                    <li {% if route == 'archives_basedoc' %}class="active"{% endif %} ><a href="{{ url('archives_basedoc') }}" >Base documentaire</a></li>
+                                    <li {% if route == 'archives_management' %}class="active"{% endif %} ><a href="{{ url('archives_management') }}">Management</a></li>
+                                    <li {% if route == 'archives_eqt' %}class="active"{% endif %} ><a href="{{ url('archives_eqt') }}" >Equipements</a></li>
+                                    <li {% if route == 'archives_cahierlabo' %}class="active"{% endif %} ><a href="{{ url('archives_cahierlabo') }}">Cahiers de laboratoire</a></li>
                                     <li><a href="#">Déchets</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#about">Administration</a></li>
-{#                        {% endif %}#}
+                            <li><a href="#about">Admin</a></li>
+                            <li>
+                                <a href="{{ url('logout') }}">
+                                    <span class="glyphicon glyphicon-log-out" aria-hidden="true" ></span>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -108,8 +129,13 @@
         {# *********************************************************************
          # JavaScripts
          #}
-        <script src="{{ asset('bundles/app/js/jquery.js') }}"></script>
-        <script src="{{ asset('bundles/app/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('bundles/app/js/jquery.js') }}"></script>                     {# jQuery #}
+        <script src="{{ asset('bundles/app/js/bootstrap.min.js') }}"></script>              {# Bootstrap #}
+        <script src="{{ asset('bundles/app/js/jquery.dataTables.js') }}"></script>          {# jQuery DataTables #}
+        <script src="{{ asset('bundles/app/js/dataTables.bootstrap.js') }}"></script>       {# DataTables Bootstrap #}
+        <script src="{{ asset('bundles/app/js/dataTables.responsive.js') }}"></script>      {# DataTables Responsive #}
+        <script src="{{ asset('bundles/app/js/responsive.bootstrap.js') }}"></script>       {# Responsive Bootstrap (DataTables) #}
+        <script src="{{ asset('bundles/app/js/jquery-ui.js') }}"></script>                  {# jQuery UI #}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

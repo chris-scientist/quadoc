@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
@@ -35,27 +36,17 @@ class Dechet
      */
     private $description;
     
-    //
-    // ManyToMany qui joue le rôle d'un OneToMany !
-    // 
-    // Cf. http://doctrine-orm.readthedocs.io/projects/doctrine-orm/en/latest/reference/association-mapping.html#one-to-many-unidirectional-with-join-table
-    //
     /**
      * @var DechetEquipementBundle\Entity\Enlevement
      * 
-     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Enlevement")
-     * @ORM\JoinTable(
-     *  name="tj_dechetenlevement_den",
-     *  joinColumns={@ORM\JoinColumn(name="den_dec_id", referencedColumnName="dec_id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="den_enl_id", referencedColumnName="enl_id", unique=true)}
-     * )
+     * @ORM\OneToMany(targetEntity="DechetEquipementBundle\Entity\Enlevement", mappedBy="dechet")
      */
     private $historique;
     
     /**
      * @var DechetEquipementBundle\Entity\Contrat
      * 
-     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Contrat")
+     * @ORM\ManyToMany(targetEntity="DechetEquipementBundle\Entity\Contrat", inversedBy="dechets")
      * @ORM\JoinTable(
      *  name="tj_dechetcontrat_dcn",
      *  joinColumns={@ORM\JoinColumn(name="dcn_dec_id", referencedColumnName="dec_id")},
@@ -71,6 +62,11 @@ class Dechet
     public function __construct()
     {
         $this->historique = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    public function __toString()
+    {
+        return $this->getNom() ;
     }
     
     /**
@@ -140,6 +136,7 @@ class Dechet
      */
     public function addHistorique(\DechetEquipementBundle\Entity\Enlevement $historique)
     {
+        $historique->setDechet( $this ) ;
         $this->historique[] = $historique;
 
         return $this;

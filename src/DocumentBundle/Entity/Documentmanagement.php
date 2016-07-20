@@ -1,8 +1,10 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DocumentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Documentmanagement
@@ -26,6 +28,7 @@ class Documentmanagement extends Document
      * 
      * @ORM\ManyToOne(targetEntity="DocumentBundle\Entity\Mission")
      * @ORM\JoinColumn(name="dma_mis_id", nullable=false, referencedColumnName="mis_id")
+     * @Assert\NotNull()
      */
     private $mission;
     
@@ -34,6 +37,7 @@ class Documentmanagement extends Document
      * 
      * @ORM\ManyToOne(targetEntity="DocumentBundle\Entity\Typedocument")
      * @ORM\JoinColumn(name="dma_tdo_id", nullable=false, referencedColumnName="tdo_id")
+     * @Assert\NotNull()
      */
     private $typedocument;
     
@@ -45,13 +49,16 @@ class Documentmanagement extends Document
      * @var string
      * 
      * @ORM\Column(name="dma_titre", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     protected $titre; 
     
     /**
      * @var \DateTime
      * 
-     * @ORM\Column(name="dma_archive_le", type="datetime")
+     * @ORM\Column(name="dma_archive_le", type="datetime", nullable=true)
+     * @Assert\Date()
      */
     protected $archiveLe;
     
@@ -69,6 +76,9 @@ class Documentmanagement extends Document
      *  joinColumns={@ORM\JoinColumn(name="dmv_dma_id", referencedColumnName="dma_id")},
      *  inverseJoinColumns={@ORM\JoinColumn(name="dmv_ver_id", referencedColumnName="ver_id", unique=true)}
      * )
+     * @ORM\OrderBy({"diffuseLe" = "ASC"})
+     * @Assert\NotNull()
+     * @Assert\Valid()
      */
     protected $versions;
     
@@ -77,6 +87,18 @@ class Documentmanagement extends Document
     // -------------------------------------------------------------------------
 
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+    
+    public function getUploadDir()
+    {
+        $dirPath = 'documents/management/' ;
+        $dir = $this->getPathUpload() . $dirPath ;
+        return $dir ;
+    }
+    
     /**
      * Get id
      *

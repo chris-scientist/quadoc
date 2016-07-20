@@ -1,0 +1,101 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<a href="{{ url('uti_stage_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Ajouter stage</h2>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Stagiaire
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.stagiaire) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.stagiaire, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Encadrant
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.encadrant) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.encadrant, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Sujet
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.sujet) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.sujet, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Equipe
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.equipe) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.equipe, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Arrivé le
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.arrive_le) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.arrive_le) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Durée
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.duree) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.duree, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Etablissement
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.etablissement) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.etablissement, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Diplôme
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.diplome) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.diplome, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+    
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

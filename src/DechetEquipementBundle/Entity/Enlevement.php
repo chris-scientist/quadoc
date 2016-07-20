@@ -1,14 +1,18 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Enlevement
  *
  * @ORM\Table(name="t_enlevement_enl")
  * @ORM\Entity(repositoryClass="DechetEquipementBundle\Repository\EnlevementRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Enlevement
 {
@@ -25,6 +29,7 @@ class Enlevement
      * @var \DateTime
      *
      * @ORM\Column(name="enl_enleve_le", type="datetime")
+     * @Assert\Date()
      */
     private $enleveLe;
 
@@ -32,6 +37,8 @@ class Enlevement
      * @var string
      *
      * @ORM\Column(name="enl_quantite", type="string", length=32)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $quantite;
 
@@ -39,6 +46,7 @@ class Enlevement
      * @var string
      *
      * @ORM\Column(name="enl_commentaire", type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      */
     private $commentaire;
     
@@ -47,8 +55,26 @@ class Enlevement
      * 
      * @ORM\ManyToOne(targetEntity="UtilisateurBundle\Entity\Utilisateur")
      * @ORM\JoinColumn(name="enl_uti_id", referencedColumnName="uti_id")
+     * @Assert\NotNull()
      */
     private $intervenant;
+    
+    /**
+     * @var DechetEquipementBundle\Entity\Dechet
+     * 
+     * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Dechet", inversedBy="historique")
+     * @ORM\JoinColumn(name="enl_dec_id", referencedColumnName="dec_id")
+     * @Assert\NotNull()
+     */
+    private $dechet;
+    
+    /**
+     * @Assert\File(
+     *      mimeTypes = {"application/pdf"},
+     *      mimeTypesMessage = "app.err.form.pdfonly"
+     * )
+     */
+    private $fichier;
 
 
     /**
@@ -58,6 +84,52 @@ class Enlevement
     {
         $this
                 ->setCommentaire(null) ;
+    }
+    
+    public function getUploadDir()
+    {
+        $absolutePath = __DIR__ . '/../../../web/upload/' ;
+        $uploadDir = $absolutePath . 'documents/enlevements/' ;
+        return $uploadDir ;
+    }
+    
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if( ! is_null($this->fichier) )
+        {
+            $nomFichier = $this->getId() . '.pdf' ;
+            $this->fichier->move(
+                $this->getUploadDir(),
+                $nomFichier
+            ) ;
+        }
+    }
+    
+    /**
+     * @ORM\PreRemove()
+     */
+    public function preRemoveUpload()
+    {
+        if( $this->getBFichier() )
+        {
+            $this->fichier = $this->getUploadDir() . $this->getId() . '.pdf' ;
+        }
+    }
+    
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+        $fichier = $this->getFichier() ;
+        if( file_exists($fichier) )
+        {
+            unlink($fichier) ;
+        }
     }
     
     /**
@@ -164,5 +236,41 @@ class Enlevement
     public function getIntervenant()
     {
         return $this->intervenant;
+    }
+
+    /**
+     * Set dechet
+     *
+     * @param \DechetEquipementBundle\Entity\Dechet $dechet
+     *
+     * @return Enlevement
+     */
+    public function setDechet(\DechetEquipementBundle\Entity\Dechet $dechet = null)
+    {
+        $this->dechet = $dechet;
+
+        return $this;
+    }
+
+    /**
+     * Get dechet
+     *
+     * @return \DechetEquipementBundle\Entity\Dechet
+     */
+    public function getDechet()
+    {
+        return $this->dechet;
+    }
+    
+    public function setFichier(UploadedFile $fichier)
+    {
+        $this->fichier = $fichier ;
+        
+        return $this ;
+    }
+    
+    public function getFichier()
+    {
+        return $this->fichier ;
     }
 }

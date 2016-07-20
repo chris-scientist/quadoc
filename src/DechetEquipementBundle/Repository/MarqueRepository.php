@@ -1,4 +1,5 @@
 <?php
+/* Copyright 2016 C. Thubert */
 
 namespace DechetEquipementBundle\Repository;
 
@@ -10,4 +11,12 @@ namespace DechetEquipementBundle\Repository;
  */
 class MarqueRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les marques selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('m')
+            ->orderBy('m.nom', 'ASC') ;
+    }
 }
