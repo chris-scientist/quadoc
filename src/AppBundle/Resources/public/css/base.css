@@ -1,13 +1,11 @@
 html {
   position: relative;
   min-height: 100%;
-  /*padding-top: 70px;*/
   padding-top: 50px;
   padding-bottom: 30px;
 }
 
 body {
-  /*padding-top: 20px;*/
   padding-bottom: 20px;
   font-size: 14px;
 }
@@ -18,7 +16,8 @@ code {
 
 body > .container {
   /*padding: 60px 15px 0;*/
-  padding: 20px 15px 0;
+  /*padding: 20px 15px 0;*/
+  padding: 5px 15px 0px 15px ;
 }
 
 .container .text-muted {
@@ -28,10 +27,10 @@ body > .container {
 /* *****************************************************************************
  * Navbar
  */
-
+/*
 .navbar {
   margin-bottom: 20px;
-}
+}*/
 
 /* *****************************************************************************
  * Sign in

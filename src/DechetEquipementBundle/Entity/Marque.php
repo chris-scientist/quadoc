@@ -4,6 +4,7 @@
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Marque
@@ -26,6 +27,8 @@ class Marque
      * @var string
      *
      * @ORM\Column(name="mar_nom", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nom;
 

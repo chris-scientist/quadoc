@@ -1,3 +1,5 @@
+# app/config/routing.yml
+# Copyright 2016 C. Thubert
 
 login_check:
     path: /login_check
@@ -15,14 +17,16 @@ document:
 
 utilisateur:
     resource: "@UtilisateurBundle/Controller"
-
-rh:
-    resource: "@RHBundle/Resources/config/routing.yml"
-#    prefix:   /rh
+    type: annotation
 
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+admin:
+    resource: "@AdminBundle/Controller"
+    type: annotation
+    prefix:   /admin/
 
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"

@@ -4,6 +4,7 @@
 namespace DocumentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Support
@@ -26,6 +27,8 @@ class Support
      * @var string
      *
      * @ORM\Column(name="sup_nom", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nom;
 

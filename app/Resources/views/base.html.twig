@@ -98,7 +98,7 @@
                                     <li><a href="#">Déchets</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#about">Admin</a></li>
+                            <li {% if route == 'admin_index' %}class="active"{% endif %} ><a href="{{ url('admin_index') }}">Admin</a></li>
                             <li>
                                 <a href="{{ url('logout') }}">
                                     <span class="glyphicon glyphicon-log-out" aria-hidden="true" ></span>
@@ -113,6 +113,9 @@
          # Body
          #}
         <div class="container theme-showcase" role="main">
+        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        <p>Connecté en tant que : {{ app.user.username }}</p>
+        {% endif %}
         {% block body %}{% endblock %}
         </div>
         {# *********************************************************************
@@ -136,6 +139,7 @@
         <script src="{{ asset('bundles/app/js/dataTables.responsive.js') }}"></script>      {# DataTables Responsive #}
         <script src="{{ asset('bundles/app/js/responsive.bootstrap.js') }}"></script>       {# Responsive Bootstrap (DataTables) #}
         <script src="{{ asset('bundles/app/js/jquery-ui.js') }}"></script>                  {# jQuery UI #}
+        <script src="{{ asset('bundles/app/js/datepicker-fr.js') }}"></script>              {# Traduction en français du Datepicker #}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

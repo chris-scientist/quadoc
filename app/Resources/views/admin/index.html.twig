@@ -1,0 +1,59 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<h2>Gérer les utilisateurs</h2>
+<div class="row" >
+    <div class="col-sm-3" >
+        <ul class="list-group" >
+            <li class="list-group-item" ><a href="{{ url('admin_utilisateur_index') }}" >Liste des utilisateurs</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<h2>Gérer les données de références</h2>
+<div class="row" >
+    <div class="col-sm-3" >
+        <ul class="list-group" >
+            <li class="list-group-item" ><a href="{{ url('admin_forme_index') }}" >Forme</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_domaine_index') }}" >Domaine</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_typedocument_index') }}" >Type document</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_mission_index') }}" >Mission</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_support_index') }}" >Support</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_processus_index') }}" >Processus</a></li>
+        </ul>
+    </div>
+    <div class="col-sm-3" >
+        <ul class="list-group" >
+            <li class="list-group-item" ><a href="{{ url('admin_fournisseur_index') }}" >Fournisseur</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_marque_index') }}" >Marque</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_parc_index') }}" >Parc</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_categorie_index') }}" >Catégorie</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_dechet_index') }}" >Déchet</a></li>
+        </ul>
+    </div>
+    <div class="col-sm-3" >
+        <ul class="list-group" >
+            <li class="list-group-item" ><a href="{{ url('admin_equipe_index') }}" >Equipe</a></li>
+            <li class="list-group-item" ><a href="{{ url('admin_statut_index') }}" >Statut</a></li>
+        </ul>
+    </div>
+    <div class="col-sm-3" >
+        <ul class="list-group" >
+            <li class="list-group-item" ><a href="{{ url('admin_modeacquisition_index') }}" >Mode d'acquisition (des formations)</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{# ***************************************************************************** Bloc JavaScript
+ #}
+{% block javascripts %}
+{#<script type="text/javascript" >
+$(document).ready( function () {
+    // A supprimer ?
+} );
+</script>#}
+{% endblock %}

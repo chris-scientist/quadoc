@@ -6,6 +6,7 @@ namespace DechetEquipementBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use AppBundle\Controller\SearchController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DechetEquipementBundle\Entity\Contrat;
@@ -15,8 +16,31 @@ use DechetEquipementBundle\Form\EquipementType;
 use DechetEquipementBundle\Form\ContratType;
 use DechetEquipementBundle\Form\InterventionType;
 
-class EquipementController extends Controller
+class EquipementController extends SearchController
 {
+    const CONST_NOM = "nom" ;
+    const CONST_OP_NOM = "operateur_nom" ;
+    const CONST_GARANTIE_DEBUT = "garantie_debut" ;
+    const CONST_GARANTIE_FIN = "garantie_fin" ;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        
+        $this->namesUrlParameters = array(
+            self::CONST_NOM => self::CONST_NOM,
+            self::CONST_OP_NOM => self::CONST_OP_NOM,
+            self::CONST_GARANTIE_DEBUT => self::CONST_GARANTIE_DEBUT,
+            self::CONST_GARANTIE_FIN => self::CONST_GARANTIE_FIN
+        ) ;
+        
+//        $this->namesUrlParameters = array(
+//            "nom",
+//            "operateur_nom",
+//            "garantie_debut",
+//            "garantie_fin"
+//        ) ;
+    }
     /**
      * @Route("/equipement/index", name="eqt_index")
      */
@@ -27,6 +51,223 @@ class EquipementController extends Controller
         
         // Récupérer les équipements actifs (non réformés).
         $equipements = $repEqt->findBy(array('reformeLe' => null)) ;
+        
+        return $this->render('equipement/index.html.twig', array(
+            'equipements' => $equipements
+        ) ) ;
+    }
+    
+//    private function initUrlParameters(Request $request)
+//    {
+//        $namesUrlParam = array(
+//            "nom",
+//            "operator_nom",
+//            "garantie_debut",
+//            "garantie_fin"
+//        ) ;
+////        $valuesUrlParam = array() ;
+//        // ..................................................................... Récupérer les paramètres (filtres) envoyés dans l'URL
+//        foreach( $namesUrlParam as $name )
+//        {
+////            $valuesUrlParam[ $name ] = $request->query->get( $name ) ;
+//            $tmpValue = $request->query->get( $name ) ;
+//            if( $tmpValue != "" )
+//            {
+//                $this->setUrlParameters($name, $tmpValue) ;
+//            }
+//        }
+//    }
+    
+    protected function searchQuery(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager() ;
+//        // ..................................................................... Récupérer les paramètres (filtres) envoyés dans l'URL
+//        $nom = $request->query->get('nom') ;
+//        $operateurNom = $request->query->get('operator_nom') ;
+//        $garantieDebut = $request->query->get('garantie_debut') ;
+//        $garantieFin = $request->query->get('garantie_fin') ;
+        $this->initUrlParameters($request) ;
+        // ..................................................................... Construire et exécuter la requête.
+        $urlParameters = $this->getUrlParameters() ;
+        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
+        $dql .= $this->addConstraintIsNull('e.reformeLe') ; // ................. Filtrer les équipements réformés.
+        if( $this->parametersExists(self::CONST_NOM) )
+        {
+            $nom = $urlParameters[ self::CONST_NOM ] ;
+            $operateurNom = $urlParameters[ self::CONST_OP_NOM ] ;
+            if( $operateurNom == "like" )
+            {
+                $dql .= $this->addConstraintLike('e.nom', 'nom') ; // .......... Filtrer les noms ressemblant à une valeur donnée.
+                $this->addQueryParameter('nom', $this->addLikeValue($nom)) ;
+            }
+            else if( $operateurNom == "equal" )
+            {
+                $dql .= $this->addConstraintTextEqualTo('e.nom', 'nom') ; // ... Filtrer les noms équivalent à une valeur donnée.
+                $this->addQueryParameter('nom', $nom) ;
+            }
+        }
+        if( $this->parametersExists(self::CONST_GARANTIE_DEBUT) && $this->parametersExists(self::CONST_GARANTIE_FIN) )
+        {
+            $dql .= $this->addConstraintDateBtw("e.fingarantieLe", "garantie_debut", "garantie_fin") ;
+            $this->addQueryParameterDate("garantie_debut", $urlParameters[ self::CONST_GARANTIE_DEBUT ]) ;
+            $this->addQueryParameterDate("garantie_fin", $urlParameters[ self::CONST_GARANTIE_FIN ]) ;
+        }
+//        if( $nom != "" ) {
+//            if( $operateurNom == "like" )
+//            {
+//                $dql .= $this->addConstraintLike('e.nom', 'nom') ; // .......... Filtrer les noms ressemblant à une valeur donnée
+//                $this->addQueryParameter('nom', $this->addLikeValue($nom)) ;
+//            }
+//            else if( $operateurNom == "equal" )
+//            {
+//                $dql .= $this->addConstraintTextEqualTo('e.nom', 'nom') ;
+//                $this->addQueryParameter('nom', $nom) ;
+//            }
+//        }
+//        if( $garantieDebut != "" && $garantieFin != "" )
+//        {
+//            $dql .= $this->addConstraintDateBtw("e.fingarantieLe", "garantie_debut", "garantie_fin") ;
+//            $this->addQueryParameterDate("garantie_debut", $garantieDebut) ;
+//            $this->addQueryParameterDate("garantie_fin", $garantieFin) ;
+//        }
+        $query = $em->createQuery($dql) ;
+        $this->addQueryParameters($query) ;
+//        $equipements = $query->getResult() ;
+//        return $equipements ;
+        return $query ;
+    }
+    /**
+     * @Route("/intervention/export", name="eqt_export")
+     */
+    public function exportAction(Request $request)
+    {
+//        $query = $this->query($request) ;
+////        $equipements = $query->getResult() ;
+//        dump($query instanceof \Doctrine\ORM\QueryBuilder) ;
+//        dump($query instanceof \Doctrine\DBAL\Query\QueryBuilder) ;
+//        dump($query instanceof \Doctrine\ORM\Query) ;
+//        $delimiter = ";" ;
+//        $itResult = $query->getQuery()->iterate() ;
+//        $handle = fopen('php://memory', 'r+') ;
+//        $header = array() ;
+//        
+//        while( false !== ($row = $itResult->next()) )
+//        {
+//            fputcsv($handle, $row[0], $delimiter) ;
+//            dump($row) ;
+//        }
+//        rewind($handle) ;
+//        $content = stream_get_contents($handle) ;
+//        fclose($handle) ;
+//        
+//        return new Response($content, 200, array(
+//            'Content-Type' => 'application/force-download',
+//            'Content-Disposition' => 'attachment; filename="export.csv"'
+//        )) ;
+        
+        
+        // ..................................................................... Récupérer les paramètres (filtres) envoyés dans l'URL
+        $nom = $request->query->get('nom') ;
+        $operateurNom = $request->query->get('operator_nom') ;
+        $garantieDebut = $request->query->get('garantie_debut') ;
+        $garantieFin = $request->query->get('garantie_fin') ;
+        
+        $urlParameters = array() ;
+        if( $nom != "" ) {
+            $urlParameters[ "nom" ] = $nom ;
+        }
+        
+        $query = $this->searchQuery($request) ;
+        $equipements = $query->getResult() ;
+//        dump($equipements) ;
+        return $this->redirectToRoute("eqt_search", $urlParameters) ;
+    }
+    
+    /**
+     * @Route("/intervention/search", name="eqt_search")
+     */
+    public function searchAction(Request $request)
+    {
+//        $em = $this->getDoctrine()->getManager() ;
+//        // ..................................................................... Récupérer les paramètres (filtres) envoyés dans l'URL
+//        $nom = $request->query->get('nom') ;
+//        $operateurNom = $request->query->get('operator_nom') ;
+//        $garantieDebut = $request->query->get('garantie_debut') ;
+//        $garantieFin = $request->query->get('garantie_fin') ;
+//        // ..................................................................... Construire et exécuter la requête
+//        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
+//        $dql .= $this->addConstraintIsNull('e.reformeLe') ; // ................. Filtrer les équipements réformés
+//        if( $nom != "" ) {
+//            if( $operateurNom == "like" )
+//            {
+//                $dql .= $this->addConstraintLike('e.nom', 'nom') ; // .......... Filtrer les noms ressemblant à une valeur donnée
+//                $this->addQueryParameter('nom', $this->addLikeValue($nom)) ;
+//            }
+//            else if( $operateurNom == "equal" )
+//            {
+//                $dql .= $this->addConstraintTextEqualTo('e.nom', 'nom') ;
+//                $this->addQueryParameter('nom', $nom) ;
+//            }
+//        }
+//        if( $garantieDebut != "" && $garantieFin != "" )
+//        {
+//            $dql .= $this->addConstraintDateBtw("e.fingarantieLe", "garantie_debut", "garantie_fin") ;
+//            $this->addQueryParameterDate("garantie_debut", $garantieDebut) ;
+//            $this->addQueryParameterDate("garantie_fin", $garantieFin) ;
+//        }
+//        $query = $em->createQuery($dql) ;
+//        $this->addQueryParameters($query) ;
+//        $equipements = $query->getResult() ;
+        
+        
+        
+        $query = $this->searchQuery($request) ;
+        $equipements = $query->getResult() ;
+        
+        
+        
+        
+//        // TEST requête dates, mais pas uniquement --> OK
+//        
+//        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
+//        $dql .= $this->addConstraintIsNull('e.reformeLe') ; // ................. Filtrer les équipements réformés
+//        if( $nom != "" ) {
+//            if( $operateurNom == "like" )
+//            {
+//                $dql .= $this->addConstraintLike('e.nom', 'nom') ; // .......... Filtrer les noms ressemblant à une valeur donnée
+//                $this->addQueryParameter('nom', $this->addLikeValue($nom)) ;
+//            }
+//            else if( $operateurNom == "equal" )
+//            {
+//                $dql .= $this->addConstraintTextEqualTo('e.nom', 'nom') ;
+//                $this->addQueryParameter('nom', $nom) ;
+//            }
+//        }
+//        $dql .= 'AND e.fingarantieLe BETWEEN :begin AND :end ' ;
+//        $query = $em->createQuery($dql) ;
+//        $this->addQueryParameters($query) ;
+//        
+//        $beginDate = new \DateTime('2010-01-01') ;
+//        $endDate = new \DateTime('2011-01-20') ;
+//        $query->setParameter('begin', $beginDate, \Doctrine\DBAL\Types\Type::DATETIME) ;
+//        $query->setParameter('end', $endDate, \Doctrine\DBAL\Types\Type::DATETIME) ;
+//        $equipements = $query->getResult() ;
+        
+        
+//        // TEST requête dates --> OK
+//        
+////        $beginDate = new \DateTime('2016-07-01') ;
+////        $endDate = new \DateTime('2016-07-20') ;
+//        
+//        $beginDate = new \DateTime('2010-01-01') ;
+//        $endDate = new \DateTime('2011-01-20') ;
+//        
+//        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
+//        $dql .= 'WHERE e.fingarantieLe BETWEEN :begin AND :end ' ;
+//        $query = $em->createQuery($dql) ;
+//        $query->setParameter('begin', $beginDate, \Doctrine\DBAL\Types\Type::DATETIME) ;
+//        $query->setParameter('end', $endDate, \Doctrine\DBAL\Types\Type::DATETIME) ;
+//        $equipements = $query->getResult() ;
         
         return $this->render('equipement/index.html.twig', array(
             'equipements' => $equipements

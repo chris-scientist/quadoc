@@ -1,0 +1,119 @@
+{# Copyright 2016 C. Thubert #}
+{% extends 'base.html.twig' %}
+{# ***************************************************************************** Bloc body
+ #}
+{% block body %}
+<a href="{{ url('admin_utilisateur_index') }}" class="btn btn-default" >&larr; Retour</a>
+
+<h2>Ajouter utilisateur</h2>
+{{ form_start(form) }}
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Nom
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.nom) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.nom, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Prénom
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.prenom) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.prenom, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Login
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.username) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.username, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Mot de passe
+     #}
+    <div class="col-md-6" >
+        {# ********************************************************************* New line
+         #}
+        <div class="row" >
+            {# ----------------------------------------------------------------- Première saisie du mot de passe
+             #}
+            <div class="col-md-2" >
+                {{ form_label(form.plainPassword.first) }}
+            </div>
+            <div class="col-md-10" >
+                {{ form_widget(form.plainPassword.first, { 'attr' : {'class':'form-control'} }) }}
+            </div>
+        </div>
+        <div class="row" >
+            {# ----------------------------------------------------------------- Répétition du mot de passe
+             #}
+            <div class="col-md-2" >
+                {{ form_label(form.plainPassword.second) }}
+            </div>
+            <div class="col-md-10" >
+                {{ form_widget(form.plainPassword.second, { 'attr' : {'class':'form-control'} }) }}
+            </div>
+        </div>
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Adresse mail
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.email) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.email, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Initiale
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.initiale) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.initiale, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Statut
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.statut) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.statut, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+    {# ------------------------------------------------------------------------- Rôle(s)
+     #}
+    <div class="col-md-1" >
+        {{ form_label(form.roles) }}
+    </div>
+    <div class="col-md-5" >
+        {{ form_widget(form.roles, { 'attr' : {'class':'form-control'} }) }} 
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Ajouter' }) }}
+    </div>
+</div>
+{{ form_rest(form) }}
+{{ form_end(form, {'render_rest': false }) }}
+{% endblock %}

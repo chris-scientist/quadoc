@@ -4,6 +4,7 @@
 namespace UtilisateurBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Statut
@@ -26,10 +27,17 @@ class Statut
      * @var string
      *
      * @ORM\Column(name="sta_nom", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nom;
 
 
+    public function __toString()
+    {
+        return $this->getNom() ;
+    }
+    
     /**
      * Get id
      *

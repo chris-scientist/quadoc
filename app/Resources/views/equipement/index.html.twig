@@ -7,6 +7,50 @@
 <p>
     <a class="btn btn-default" href="{{ url('eqt_add') }}" >Créer équipement</a>
 </p>
+{% set operateurNom = app.request.get('operateur_nom') %}
+{% set nom = app.request.get('nom') %}
+{% set garantieDebut = app.request.get('garantie_debut') %}
+{% set garantieFin = app.request.get('garantie_fin') %}
+<form action="{{ url('eqt_search') }}" method="GET" style="border: 1px solid #2aa9e0;padding: 10px;margin-bottom: 10px;" id="form-filtres" >
+    <p style="font-weight:bold;font-size:1.5em;" >Filtres et export</p>
+    <div class="row" style="margin-top:5px;margin-bottom:5px;" >
+        <div class="col-md-2" >
+            <p>Nom</p>
+        </div>
+        <div class="col-md-2" >
+            <select name="operateur_nom" class="form-control" >
+                <option value="equal" {% if operateurNom == "equal" %}selected="selected"{% endif %} >égale à</option>
+                <option value="like" {% if operateurNom == "like" %}selected="selected"{% endif %} >contient</option>
+            </select>
+        </div>
+        <div class="col-md-2" >
+            <input type="text" name="nom" class="form-control" {% if nom is not empty %}value="{{ nom }}"{% endif %} />
+        </div>
+    </div>
+    <div class="row" style="margin-top:5px;margin-bottom:5px;" >
+        <div class="col-md-2" >
+            <p>Fin garantie</p>
+        </div>
+        <div class="col-md-2" >
+            <p>Entre</p>
+        </div>
+        <div class="col-md-2" >
+            <input type="text" name="garantie_debut" id="garantie_debut" class="form-control" {% if garantieDebut is not empty %}value="{{ garantieDebut }}"{% endif %} />
+        </div>
+        <div class="col-md-2" >
+            <input type="text" name="garantie_fin" id="garantie_fin" class="form-control" {% if garantieFin is not empty %}value="{{ garantieFin }}"{% endif %} />
+        </div>
+    </div>
+    <div class="row" >
+        <div class="col-md-1" >
+            <input type="submit" value="Filtrer" class="btn btn-default" />
+        </div>
+        <div class="col-md-1" >
+{#            <a href="{{ url('eqt_export') }}" >Exporter</a>#}
+            <button id="btn-export" class="btn btn-primary" >Exporter</button>
+        </div>
+    </div>
+</form>
 {% endif %}
 {% if (equipements|length) > 0 %}
 <table class="table table-striped display" id="table_eqt" >
@@ -143,6 +187,55 @@
 {% block javascripts %}
 <script type="text/javascript" >
 $(document).ready( function () {
+    
+    
+    $('#garantie_debut').datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd-mm-yy"
+    }) ;
+    
+    $('#garantie_fin').datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd-mm-yy"
+    }) ;
+    
+    {#$("#ajouter_filtre").click(function (event) {
+/*        var fieldList = $( '<select name="field" class="form-control" >' ).*/
+        var nbFilter = $('#actions_filtres').data('nb-filter') ;
+        if( nbFilter === undefined ) {
+            nbFilter = 0 ;
+        } else {
+            nbFilter += 1 ;
+        }
+        var fieldList = $( '<select id="filter-' + nbFilter + '" class="form-control" >' ).
+                append( '<option value="null" >-- Champ --</option>' ).
+                append( '<option value="nom" >Nom</option>' ) ;
+        var fieldListContainer = $( '<div class="col-md-2" >' ).
+                append( fieldList ) ;
+        var filterLine = $( '<div class="row" style="margin-top:5px;margin-bottom:5px;" id="filter-line-' + nbFilter + '" >' ).
+                append( fieldListContainer ) ;
+        $('#actions_filtres').before( filterLine ) ;
+        if( nbFilter == 0 ) {
+            $('#actions_filtres').show() ;
+        }
+        $('#actions_filtres').data('nb-filter', nbFilter) ;
+        
+        $('#filter-' + nbFilter).change(function () {
+            var nameField = $(this).val() ;
+            var operatorList = $( '<select id="operator-' + nbFilter + '" name="operator_' + nameField + '" class="form-control" >').
+                    append( '<option value="null" >-- Opérateur --</option>' ).
+                    append( '<option value="equal" >Egale à</option>' ).
+                    append( '<option value="like" >Correspondant à</option>') ;
+            var operatorListContainer = $( '<div class="col-md-2" >' ).
+                    append( operatorList ) ;
+            $( '#filter-line-' + nbFilter ).append( operatorListContainer ) ;
+            
+        }) ;
+        event.preventDefault();
+    }) ;#}
+    
     /*
      * Rendre le tableau dynamique (tri des colonnes, par exemple).
      */
@@ -335,6 +428,14 @@ $(document).ready( function () {
         }) ;
     {% endfor %}
     {% endif %}
+    
+    /*
+     * Gestion de l'export.
+     */
+    $("#btn-export").click(function () {
+        $('#form-filtres').attr('action', '{{ url('eqt_export') }}') ;
+        
+    }) ;
 } );
 </script>
 {% endblock %}

@@ -4,6 +4,7 @@
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Categorie
@@ -26,6 +27,8 @@ class Categorie
      * @var string
      *
      * @ORM\Column(name="cat_nom", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nom;
     
@@ -34,6 +37,7 @@ class Categorie
      * 
      * @ORM\ManyToOne(targetEntity="DechetEquipementBundle\Entity\Parc")
      * @ORM\JoinColumn(name="cat_par_id", referencedColumnName="par_id")
+     * @Assert\NotNull()
      */
     private $parc;
 

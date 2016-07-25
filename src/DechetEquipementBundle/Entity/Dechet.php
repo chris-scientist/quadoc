@@ -4,6 +4,7 @@
 namespace DechetEquipementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Dechet
@@ -26,6 +27,8 @@ class Dechet
      * @var string
      *
      * @ORM\Column(name="dec_nom", type="string", length=32, unique=true)
+     * @Assert\Length(max=32)
+     * @Assert\NotBlank()
      */
     private $nom;
 
@@ -33,6 +36,8 @@ class Dechet
      * @var string
      *
      * @ORM\Column(name="dec_description", type="string", length=255)
+     * @Assert\Length(max=255)
+     * @Assert\NotBlank()
      */
     private $description;
     
