@@ -40,7 +40,7 @@ class UtilisateurController extends Controller
                 array(
                     'type' => PasswordType::class,
                     'first_options' => array('label' => 'Mot de passe'),
-                    'second_options' => array('label' => 'Répété le mot de passe')
+                    'second_options' => array('label' => 'Répéter le mot de passe')
                 )) ;
         
         $form->handleRequest($request) ;

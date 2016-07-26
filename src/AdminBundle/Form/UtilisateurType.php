@@ -17,8 +17,10 @@ class UtilisateurType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $roles = array(
-            "ROLE_ADMIN" => "ROLE_ADMIN",
-            "ROLE_ANIMQUALITE" => "ROLE_ANIMQUALITE"
+            "Administrateur" => "ROLE_ADMIN",
+            "Animateur qualité" => "ROLE_ANIMQUALITE",
+            "Utilisateur" => "ROLE_UTILISATEUR",
+            "Visiteur" => "ROLE_VISITEUR",
         ) ;
         
         $builder->add('nom', TextType::class) ;
