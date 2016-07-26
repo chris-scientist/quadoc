@@ -5,7 +5,6 @@ namespace DechetEquipementBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Controller\SearchController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,12 +26,10 @@ class EquipementController extends SearchController
     {
         parent::__construct();
         
-        $this->namesUrlParameters = array(
-            self::CONST_NOM => self::CONST_NOM,
-            self::CONST_OP_NOM => self::CONST_OP_NOM,
-            self::CONST_GARANTIE_DEBUT => self::CONST_GARANTIE_DEBUT,
-            self::CONST_GARANTIE_FIN => self::CONST_GARANTIE_FIN
-        ) ;
+        $this->addNamesUrlParameters(self::CONST_NOM, self::CONST_NOM) ;
+        $this->addNamesUrlParameters(self::CONST_OP_NOM, self::CONST_OP_NOM) ;
+        $this->addNamesUrlParameters(self::CONST_GARANTIE_DEBUT, self::CONST_GARANTIE_DEBUT) ;
+        $this->addNamesUrlParameters(self::CONST_GARANTIE_FIN, self::CONST_GARANTIE_FIN) ;
     }
     /**
      * @Route("/equipement/index", name="eqt_index")
@@ -73,7 +70,7 @@ class EquipementController extends SearchController
                 $this->addQueryParameter('nom', $nom) ;
             }
         }
-        if( $this->parametersExists(self::CONST_GARANTIE_DEBUT) && $this->parametersExists(self::CONST_GARANTIE_FIN) )
+        if( $this->parametersExists(self::CONST_GARANTIE_DEBUT) || $this->parametersExists(self::CONST_GARANTIE_FIN) )
         {
             $dql .= $this->addConstraintDateBtw("e.fingarantieLe", "garantie_debut", "garantie_fin") ;
             $this->addQueryParameterDate("garantie_debut", $urlParameters[ self::CONST_GARANTIE_DEBUT ]) ;

@@ -88,3 +88,12 @@ body > .container {
   height: 60px;
   background-color: #f5f5f5;
 }
+
+/* *****************************************************************************
+ * Filtres
+ */
+
+.filter-line {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
