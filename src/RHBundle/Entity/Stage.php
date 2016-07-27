@@ -46,14 +46,14 @@ class Stage
     /**
      * @var string
      *
-     * @ORM\Column(name="stg_etablissement", type="string", length=32)
+     * @ORM\Column(name="stg_etablissement", type="string", length=255)
      */
     private $etablissement;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="stg_diplome", type="string", length=32)
+     * @ORM\Column(name="stg_diplome", type="string", length=255)
      */
     private $diplome;
     

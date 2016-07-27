@@ -44,8 +44,8 @@ class Cahierlaboratoire
     /**
      * @var string
      *
-     * @ORM\Column(name="cla_intitule", type="string", length=32)
-     * @Assert\Length(max=32)
+     * @ORM\Column(name="cla_intitule", type="string", length=255)
+     * @Assert\Length(max=255)
      * @Assert\NotBlank()
      */
     private $intitule;

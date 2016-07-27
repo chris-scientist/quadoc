@@ -28,8 +28,8 @@ class Formation
     /**
      * @var string
      *
-     * @ORM\Column(name="fat_intitule", type="string", length=32, unique=true)
-     * @Assert\Length(max=32)
+     * @ORM\Column(name="fat_intitule", type="string", length=255, unique=true)
+     * @Assert\Length(max=255)
      */
     private $intitule;
 

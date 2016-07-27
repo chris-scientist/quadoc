@@ -26,8 +26,8 @@ class Protocole
     /**
      * @var string
      *
-     * @ORM\Column(name="pto_titre", type="string", length=32)
-     * @Assert\Length(max=32)
+     * @ORM\Column(name="pto_titre", type="string", length=255)
+     * @Assert\Length(max=255)
      * @Assert\NotBlank()
      */
     private $titre;

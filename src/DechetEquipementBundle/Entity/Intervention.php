@@ -28,8 +28,8 @@ class Intervention
     /**
      * @var string
      *
-     * @ORM\Column(name="int_operation", type="string", length=32)
-     * @Assert\Length(max=32)
+     * @ORM\Column(name="int_operation", type="string", length=255)
+     * @Assert\Length(max=255)
      * @Assert\NotBlank()
      */
     private $operation;
