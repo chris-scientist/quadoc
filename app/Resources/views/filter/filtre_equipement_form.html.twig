@@ -1,0 +1,138 @@
+{# Copyright 2016 C. Thubert #}
+
+<div class="row" >
+    <div class="col-md-12" >
+        <p class="alert alert-danger">Filtre et export en cours de développement... (ne pas tester)</p>
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row" >
+    {# ------------------------------------------------------------------------- Filtre: nom
+     #}
+    <div class="col-md-2" >
+        {{ form_label(form.nom) }}
+    </div>
+    <div class="col-md-2" >
+        {{ form_widget(form.nom.op_text, { 'attr' : {'class':'form-control'} }) }}
+    </div>
+    <div class="col-md-2" >
+        {{ form_widget(form.nom.searched_value, { 'attr' : {'class':'form-control'} }) }}
+    </div>
+    {# ------------------------------------------------------------------------- Filtre: parc
+     #}
+    <div class="col-md-2" >
+        {{ form_label(form.parc) }}
+    </div>
+    <div class="col-md-4" >
+        {{ form_widget(form.parc, { 'attr' : {'class':'form-control'} }) }}
+    </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row filter-line" >
+    {# ------------------------------------------------------------------------- Filtre: emplacement
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.emplacement) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.emplacement.op_text, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.emplacement.searched_value, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+    {# ------------------------------------------------------------------------- Filtre: catégorie
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.categorie) }}
+   </div>
+   <div class="col-md-4" >
+        {{ form_widget(form.categorie, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row filter-line" >
+    {# ------------------------------------------------------------------------- Filtre: acheté le
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.achete_le) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.achete_le.begin_date) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.achete_le.end_date) }}
+   </div>
+    {# ------------------------------------------------------------------------- Filtre: équipes
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.equipe) }}
+   </div>
+   <div class="col-md-4" >
+        {{ form_widget(form.equipe, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row filter-line" >
+    {# ------------------------------------------------------------------------- Filtre: fin garantie le
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.fingarantie_le) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.fingarantie_le.begin_date) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.fingarantie_le.end_date) }}
+   </div>
+    {# ------------------------------------------------------------------------- Filtre: marque
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.marque) }}
+   </div>
+   <div class="col-md-4" >
+        {{ form_widget(form.marque, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row filter-line" >
+    {# ------------------------------------------------------------------------- Filtre: mise en service le
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.miseenservice_le) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.miseenservice_le.begin_date) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.miseenservice_le.end_date) }}
+   </div>
+    {# ------------------------------------------------------------------------- Filtre: fournisseur
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.fournisseur) }}
+   </div>
+   <div class="col-md-4" >
+        {{ form_widget(form.fournisseur, { 'attr' : {'class':'form-control'} }) }}
+   </div>
+</div>
+{# ***************************************************************************** New line
+ #}
+<div class="row filter-line" >
+    {# ------------------------------------------------------------------------- Filtre: réformé le
+     #}
+   <div class="col-md-2" >
+        {{ form_label(form.reforme_le) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.reforme_le.begin_date) }}
+   </div>
+   <div class="col-md-2" >
+        {{ form_widget(form.reforme_le.end_date) }}
+   </div>
+</div>
+

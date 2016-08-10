@@ -29,6 +29,9 @@ abstract class SearchController extends Controller
     //
     // Noms des paramètres passés dans l'URL.
     private $namesUrlParameters ;
+    //
+    // Tableau composé d'un groupe de contrainte.
+    private $constraints ;
     
     public function __construct()
     {
@@ -39,12 +42,51 @@ abstract class SearchController extends Controller
         $this->queryParametersDate = array() ;
         $this->urlParameters = array() ;
         $this->namesUrlParameters = array() ;
+        $this->constraints = array() ;
         
         $this->addNamesUrlParameters(self::CONST_OP_CONTRAINTE, self::CONST_OP_CONTRAINTE) ;
     }
-    //
+    // 
     // Construire la requête (DQL) pour filtrer les données.
     abstract protected function searchQuery(Request $request) ;
+    //
+    // Construire la requête (DQL) avancée pour filtrer les données.
+    abstract protected function buildAdvancedQuery(Request $request, $form, $dql) ;
+    //
+    // *************************************************************************
+    //
+    // Gestion des contraintes.
+    //
+    // *************************************************************************
+    //
+    // Ajouter une contrainte.
+    protected function addConstraint($aConstraint)
+    {
+        $this->constraints[] = $aConstraint ;
+    }
+    //
+    // Récupérer les contraintes sous la forme d'une chaîne de caractères.
+    protected function getConstraintsToText()
+    {
+        $constraints = 'AND (' ;
+        
+//        foreach( $this->constraints as $constraint ) {
+        for( $itC = 0 ; $itC < count($this->constraints) ; $itC++ ) {
+//            $constraints .= $constraint ;
+            $constraint = $this->constraints[$itC] ;
+            if( $itC > 0 ) {
+                $constraints .= $this->addKeyword() ;
+            }
+            $constraints .= $constraint ;
+        }
+        $constraints .= ')';
+        
+        if( count($this->constraints) == 0 ) {
+            $constraints = '' ;
+        }
+        
+        return $constraints ;
+    }
     //
     // *************************************************************************
     //
@@ -57,10 +99,9 @@ abstract class SearchController extends Controller
     // -------------------------------------------------------------------------
     // 
     // Ajouter une contrainte "is [not] null" sur un champ.
-    protected function addConstraintIsNull($aField, $isNull = true)
+    protected function addConstraintIsNull($aField, $isNull = true, $forceAndKeyword = false)
     {
-        $constraint = $this->addConstraint() .
-                        $aField . ' IS ' ;
+        $constraint = $aField . ' IS ' ;
         if( ! $isNull ) {
             $constraint .= 'NOT ' ;
         }
@@ -73,20 +114,18 @@ abstract class SearchController extends Controller
     // -------------------------------------------------------------------------
     //
     // Ajouter une contrainte "like" sur un champ.
-    protected function addConstraintLike($aField, $aParamValue)
+    protected function addConstraintLike($aField, $aParamValue, $forceAndKeyword = false)
     {
-        $constraint = $this->addConstraint() .
-                        'UPPER(' . $aField . ') ' .
+        $constraint =   'UPPER(' . $aField . ') ' .
                         'LIKE ' .
                         'UPPER(:' . $aParamValue . ') ' ;
         return $constraint ;
     }
     //
     // Ajouter une contrainte "=" (égale à) sur un champ.
-    protected function addConstraintTextEqualTo($aField, $aParamValue)
+    protected function addConstraintTextEqualTo($aField, $aParamValue, $forceAndKeyword = false)
     {
-        $constraint = $this->addConstraint() .
-                        'UPPER(' . $aField . ') ' .
+        $constraint =   'UPPER(' . $aField . ') ' .
                         '= ' .
                         'UPPER(:' . $aParamValue . ') ' ;
         return $constraint ;
@@ -97,9 +136,9 @@ abstract class SearchController extends Controller
     // -------------------------------------------------------------------------
     //
     // Ajouter une contrainte "entre" sur un champ date.
-    protected function addConstraintDateBtw($aField, $aParamBegin, $aParamEnd)
+    protected function addConstraintDateBtw($aField, $aParamBegin, $aParamEnd, $forceAndKeyword = false)
     {
-        $constraint = $this->addConstraint() . $aField .
+        $constraint = $this->addKeyword($forceAndKeyword) . $aField .
                         ' BETWEEN :' . $aParamBegin .
                         ' AND :' . $aParamEnd . ' ' ;
         return $constraint ;
@@ -110,6 +149,9 @@ abstract class SearchController extends Controller
 //    {
 //        $constraint = $this->addConstraint() . $aField .
 //                        ' ';
+//                        
+//     http://stackoverflow.com/questions/10681158/how-to-compare-datetime-field-from-doctrine2-with-a-date
+//                        
 //        return ;
 //    }
     // 
@@ -123,10 +165,10 @@ abstract class SearchController extends Controller
         return ('%' . $aValue . '%') ;
     }
     //
-    // Ajouter le mot clé "where" ou "and".
-    private function addConstraint()
+    // Ajouter le mot clé "where", "and" ou "or.
+    protected function addKeyword($forceAndKeyword = false)
     {
-        $combination = ( $this->andCombinationFlag ? 'AND' : 'OR' ) ;
+        $combination = ( ( $this->andCombinationFlag || $forceAndKeyword ) ? 'AND' : 'OR' ) ;
         $keyword = ( $this->whereFlag ? $combination : 'WHERE' ) ;
         if( ! $this->whereFlag ) {
             $this->whereFlag = true ;
@@ -164,6 +206,18 @@ abstract class SearchController extends Controller
             $dateValue = new \DateTime($valueArray[2] . '-' . $valueArray[1] . '-' . $valueArray[0]) ;
             $aQuery->setParameter($param, $dateValue, \Doctrine\DBAL\Types\Type::DATETIME) ;
         }
+    }
+    //
+    // *************************************************************************
+    //
+    // Gestion des paramètres passés via le formulaire.
+    //
+    // *************************************************************************
+    //
+    // Test l'existence du paramètre.
+    protected function parameterExists($aParameter)
+    {
+        
     }
     //
     // *************************************************************************

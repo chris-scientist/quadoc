@@ -11,4 +11,12 @@ namespace DechetEquipementBundle\Repository;
  */
 class ParcRepository extends \Doctrine\ORM\EntityRepository
 {
+    /*
+     * Trier les parcs selon leur nom, utilisé pour les formulaires.
+     */
+    public function trierParNom()
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.nom', 'ASC') ;
+    }
 }

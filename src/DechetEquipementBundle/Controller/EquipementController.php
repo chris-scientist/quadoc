@@ -14,6 +14,7 @@ use DechetEquipementBundle\Entity\Intervention;
 use DechetEquipementBundle\Form\EquipementType;
 use DechetEquipementBundle\Form\ContratType;
 use DechetEquipementBundle\Form\InterventionType;
+use DechetEquipementBundle\Form\FiltreEquipementType;
 
 class EquipementController extends SearchController
 {
@@ -21,6 +22,8 @@ class EquipementController extends SearchController
     const CONST_OP_NOM = "operateur_nom" ;
     const CONST_GARANTIE_DEBUT = "garantie_debut" ;
     const CONST_GARANTIE_FIN = "garantie_fin" ;
+    const CONST_OPTXT_LIKE = "like" ;
+    const CONST_OPTXT_EQUALTO = "equal_to" ;
     
     public function __construct()
     {
@@ -34,19 +37,76 @@ class EquipementController extends SearchController
     /**
      * @Route("/equipement/index", name="eqt_index")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager() ;
         $repEqt = $em->getRepository("DechetEquipementBundle:Equipement") ;
         
         // Récupérer les équipements actifs (non réformés).
-        $equipements = $repEqt->findBy(array('reformeLe' => null)) ;
+        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
+        $dql .= $this->addKeyword() . $this->addConstraintIsNull('e.reformeLe', true, true) ; // ................. Filtrer les équipements réformés.
+        
+        $form = $this->createForm(FiltreEquipementType::class) ;
+        $form->handleRequest($request) ;
+        
+        $nom = $form['nom']['searched_value']->getData() ;
+        $nomFiltre = ( ! is_null($nom) ) ;
+        
+        if($form->isValid())
+        {
+            if( $nomFiltre )
+            {
+                $opNom =  $form['nom']['op_text']->getData() ;
+                if( $opNom == self::CONST_OPTXT_EQUALTO )
+                {
+                    $constraint = $this->addConstraintTextEqualTo('e.nom', self::CONST_NOM) ;
+                }
+                else if( $opNom == self::CONST_OPTXT_LIKE )
+                {
+                    $constraint = $this->addConstraintLike('e.nom', self::CONST_NOM) ;
+                    $nom = $this->addLikeValue($nom) ;
+                }
+                $this->addConstraint( $constraint ) ;
+            }
+            $dql .= $this->getConstraintsToText() ;
+        }
+        
+        $query = $em->createQuery($dql) ;
+        if( $nomFiltre ) {
+            $query->setParameter(self::CONST_NOM, $nom) ;
+        }
+        $equipements = $query->getResult() ;
         
         return $this->render('equipement/index.html.twig', array(
-            'equipements' => $equipements
+            'equipements' => $equipements,
+            'form' => $form->createView()
         ) ) ;
     }
     
+    protected function buildAdvancedQuery(Request $request, $form, $dql)
+    {
+//            $val = $form['nom']['searched_value']->getData() ;
+//            $val = $form['nom']['op_text']->getData() ;
+//            $val = $form['achete_le']['begin_date']->getData() ;
+//            dump($val) ;
+        $nom = $form['nom']['searched_value']->getData() ;
+        if( ! is_null($nom) )
+        {
+            $opNom =  $form['nom']['op_text']->getData() ;
+            if( $opNom == self::CONST_OPTXT_EQUALTO )
+            {
+                $constraint = $this->addConstraintTextEqualTo(self::CONST_NOM, self::CONST_NOM) ;
+            }
+            else if( $opNom == self::CONST_OPTXT_LIKE )
+            {
+                $constraint = $this->addConstraintLike(self::CONST_NOM, self::CONST_NOM) ;
+            }
+            $this->addConstraint( $constraint ) ;
+            $dql->setParameter(self::CONST_NOM, $nom) ;
+        }
+    }
+
+
     protected function searchQuery(Request $request)
     {
         $em = $this->getDoctrine()->getManager() ;
