@@ -19,6 +19,11 @@ class UtilisateurType extends AbstractType
         $roles = array(
             "Administrateur" => "ROLE_ADMIN",
             "Animateur qualité" => "ROLE_ANIMQUALITE",
+            "Responsable" => "ROLE_RESPONSABLE",
+            "RH" => "ROLE_RH",
+            "Animateur SME" => "ROLE_ANIM_SME",
+            "Animateur charte sanitaire" => "ROLE_ANIM_CHARTESANITAIRE",
+            "Animateur prévention" => "ROLE_ANIM_PREVENTION",
             "Utilisateur" => "ROLE_UTILISATEUR",
             "Visiteur" => "ROLE_VISITEUR",
         ) ;
