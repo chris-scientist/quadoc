@@ -156,14 +156,7 @@
 </div>
 {% endfor %}
 
-<div class="row" style="margin-top:10px;" >
-    <div class="col-md-1" >
-        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
-    </div>
-    <div class="col-md-1" >
-        {{ form_row(form.save, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Créer' }) }}
-    </div>
-</div>
+{% include 'form/buttons-line.html.twig' %}
 {{ form_rest(form) }}
 {{ form_end(form, {'render_rest': false }) }}
 {% endblock %}

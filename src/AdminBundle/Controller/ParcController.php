@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DechetEquipementBundle\Entity\Parc;
 use AdminBundle\Form\ParcType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ParcController extends Controller
 {
     /**
      * @Route("/parc/index", name="admin_parc_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class ParcController extends Controller
     }
     /**
      * @Route("/parc/add", name="admin_parc_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class ParcController extends Controller
      *  name="admin_parc_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Parc $parc, Request $request)
     {

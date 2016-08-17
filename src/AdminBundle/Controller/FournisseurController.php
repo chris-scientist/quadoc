@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DechetEquipementBundle\Entity\Fournisseur;
 use AdminBundle\Form\FournisseurType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class FournisseurController extends Controller
 {
     /**
      * @Route("/fournisseur/index", name="admin_fournisseur_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class FournisseurController extends Controller
     }
     /**
      * @Route("/fournisseur/add", name="admin_fournisseur_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class FournisseurController extends Controller
      *  name="admin_fournisseur_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Fournisseur $fournisseur, Request $request)
     {

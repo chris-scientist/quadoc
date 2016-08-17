@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Domaine;
 use AdminBundle\Form\DomaineType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class DomaineController extends Controller
 {
     /**
      * @Route("/domaine/index", name="admin_domaine_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class DomaineController extends Controller
     }
     /**
      * @Route("/domaine/add", name="admin_domaine_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class DomaineController extends Controller
      *  name="admin_domaine_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Domaine $domaine, Request $request)
     {

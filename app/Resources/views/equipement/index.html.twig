@@ -4,242 +4,18 @@
  #}
 {% block body %}
 {% if route != 'archives_eqt' %}
-{# Test ---------------------------------------------------------- #}
 
-{# A SUPPRIMER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< #}
-
-{#{% if is_granted('ROLE_VISITEUR') %}
-is Visiteur
-{% endif %}
-{% if is_granted('ROLE_UTILISATEUR') %}
-is Utilisateur
-{% endif %}
-{% if is_granted('ROLE_ADMIN') %}
-is Admin
-{% endif %}#}
-{# Fin Test ---------------------------------------------------------- #}
+{% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or 
+        is_granted("ROLE_ANIM_PREVENTION") or is_granted("ROLE_ANIM_CHARTESANITAIRE") or 
+        is_granted("ROLE_ANIM_SME") or is_granted("ROLE_RESPONSABLE") or is_granted("ROLE_UTILISATEUR") %}
 <p>
     <a class="btn btn-success" href="{{ url('eqt_add') }}" >Créer équipement</a>
 </p>
-
-{#{{ form(form) }}#}
+{% endif %}
 
 {% set filenameOfNoGenericForm = 'filtre_equipement_form.html.twig' %}
 {% include 'filter/filter.html.twig' %}
 
-{#
-{% set operateurContrainte = app.request.get('operateur_contrainte') %}
-{% set opContrainteEt = ( (operateurContrainte == "ou") ? false : true ) %}
-{% set operateurNom = app.request.get('operateur_nom') %}
-{% set nom = app.request.get('nom') %}
-{% set garantieDebut = app.request.get('garantie_debut') %}
-{% set garantieFin = app.request.get('garantie_fin') %}
-<div id="containeur-filtres" style="margin-bottom: 10px;" >
-    <h3>Filtres et export</h3>
-    <div>
-<!--        <form action="{{ url('eqt_search') }}" method="GET" style="border: 1px solid #2aa9e0;padding: 10px;margin-bottom: 10px;" id="form-filtres" >-->
-        <form action="{{ url('eqt_search') }}" method="GET" id="form-filtres" >
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Libellé champ : et / ou
-                 
-                <div class="col-md-2" >
-                    <p>Combinaison des filtres</p>
-                </div>
-                 ------------------------------------------------------------- Et
-                 
-                <div class="col-md-1" >
-                    <input type="radio" name="operateur_contrainte" value="et" id="op_cont_et" {% if opContrainteEt %}checked{% endif %} >
-                    <label for="op_cont_et" >Et</label>
-                </div>
-                 ------------------------------------------------------------- Ou
-                 
-                <div class="col-md-1" >
-                    <input type="radio" name="operateur_contrainte" value="ou" id="op_cont_ou" {% if not opContrainteEt %}checked{% endif %} >
-                    <label for="op_cont_ou" >Ou</label>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: nom
-                 
-                <div class="col-md-2" >
-                    <p>Nom</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="operateur_nom" class="form-control" >
-                        <option value="equal" {% if operateurNom == "equal" %}selected="selected"{% endif %} >égale à</option>
-                        <option value="like" {% if operateurNom == "like" %}selected="selected"{% endif %} >contient</option>
-                    </select>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="nom" class="form-control" {% if nom is not empty %}value="{{ nom }}"{% endif %} />
-                </div>
-                 ------------------------------------------------------------- Filtre: parc
-                 
-                <div class="col-md-2" >
-                    <p>Parc(s)</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="parc" class="form-control" multiple >
-                        {% for parc in parcs %}
-                            
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: emplacement
-                 
-                <div class="col-md-2" >
-                    <p>Emplacement</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="operateur_nom" class="form-control" >
-                        <option value="equal" {% if operateurNom == "equal" %}selected="selected"{% endif %} >égale à</option>
-                        <option value="like" {% if operateurNom == "like" %}selected="selected"{% endif %} >contient</option>
-                    </select>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="nom" class="form-control" {% if nom is not empty %}value="{{ nom }}"{% endif %} />
-                </div>
-                 ------------------------------------------------------------- Filtre: catégorie
-                 
-                <div class="col-md-2" >
-                    <p>Catégorie(s)</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="categorie" class="form-control" multiple >
-                        {% for parc in parcs %}
-                            
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: acheté le
-                 
-                <div class="col-md-2" >
-                    <p>Acheté le</p>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_debut" id="garantie_debut" class="form-control" {% if garantieDebut is not empty %}value="{{ garantieDebut }}"{% endif %} />
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_fin" id="garantie_fin" class="form-control" {% if garantieFin is not empty %}value="{{ garantieFin }}"{% endif %} />
-                </div>
-                 ------------------------------------------------------------- Filtre: équipes
-                 
-                <div class="col-md-2" >
-                    <p>Equipes</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="equipe" class="form-control" multiple >
-                        {% for parc in parcs %}
-                            
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: fin garantie le
-                 
-                <div class="col-md-2" >
-                    <p>Fin garantie</p>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_debut" id="garantie_debut" class="form-control" {% if garantieDebut is not empty %}value="{{ garantieDebut }}"{% endif %} />
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_fin" id="garantie_fin" class="form-control" {% if garantieFin is not empty %}value="{{ garantieFin }}"{% endif %} />
-                </div>
-                 ------------------------------------------------------------- Filtre: marque
-                 
-                <div class="col-md-2" >
-                    <p>Marque</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="marque" class="form-control" multiple >
-                        {% for parc in parcs %}
-                            
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: mise en service le
-                 
-                <div class="col-md-2" >
-                    <p>Mise en service le</p>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_debut" id="garantie_debut" class="form-control" {% if garantieDebut is not empty %}value="{{ garantieDebut }}"{% endif %} />
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_fin" id="garantie_fin" class="form-control" {% if garantieFin is not empty %}value="{{ garantieFin }}"{% endif %} />
-                </div>
-                 ------------------------------------------------------------- Filtre: fournisseur
-                 
-                <div class="col-md-2" >
-                    <p>Fournisseur</p>
-                </div>
-                <div class="col-md-2" >
-                    <select name="fournisseur" class="form-control" multiple >
-                        {% for parc in parcs %}
-                            
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-             ***************************************************************** New line
-             
-            <div class="row filter-line" >
-                 ------------------------------------------------------------- Filtre: réformé le
-                 
-                <div class="col-md-2" >
-                    <p>Réformé le</p>
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_debut" id="garantie_debut" class="form-control" {% if garantieDebut is not empty %}value="{{ garantieDebut }}"{% endif %} />
-                </div>
-                <div class="col-md-2" >
-                    <input type="text" name="garantie_fin" id="garantie_fin" class="form-control" {% if garantieFin is not empty %}value="{{ garantieFin }}"{% endif %} />
-                </div>
-            </div>
-            <div class="row" >
-                <div class="col-md-1" >
-                    <input type="submit" value="Filtrer" class="col-md-1 btn btn-warning" />
-                    <input type="submit" value="Filtrer" class="btn btn-warning" style="width: 80px;" />
-                </div>
-                <div class="col-md-1" >
-                    <button id="btn-export" class="col-md-1 btn btn-primary" >Exporter</button>
-                    <button id="btn-export" class="btn btn-primary" style="width: 80px;" >Exporter</button>
-                </div>
-                <div class="col-md-1" >
-                    <a href="#" class="col-md-1 btn btn-info" >
-                    <a href="#" class="btn btn-info" >
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" ></span> Aide
-                    </a>
-                    <button id="btn-help" class="btn btn-info" style="width: 80px;" >
-                    <button id="btn-help" class="btn btn-info" >
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" ></span> Aide
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-#}
 {% endif %}
 {% if (equipements|length) > 0 %}
 <table class="table table-striped display" id="table_eqt" >
@@ -290,10 +66,14 @@ is Admin
     <h2>
         Equipement 
         {% if route != 'archives_eqt' %}
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") %}
         <a id="btn-reformer-ronly" class="btn btn-default" href="{{ url('eqt_reformer', {'id': 1}) }}" style="display:none;" >Réformer FAKE</a>
         <a id="btn-reformer" class="btn btn-default" href="#" >Réformer</a>
+        {% endif %}
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or is_granted("ROLE_ANIM_PREVENTION") %}
         <a id="btn-supprimer-ronly" class="btn btn-default" href="{{ url('eqt_remove', {'id': 1}) }}" style="display:none;" >Supprimer FAKE</a>
         <a id="btn-supprimer" class="btn btn-default" href="#" >Supprimer</a>
+        {% endif %}
         {% endif %}
     </h2>
     <p style="display:none;" ><img src="" alt="" /></p>
@@ -319,8 +99,12 @@ is Admin
     <h2>
         Contrats 
         {% if route != 'archives_eqt' %}
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or 
+                is_granted("ROLE_ANIM_PREVENTION") or is_granted("ROLE_ANIM_CHARTESANITAIRE") or 
+                is_granted("ROLE_ANIM_SME") or is_granted("ROLE_RESPONSABLE") or is_granted("ROLE_UTILISATEUR") %}
         <a id="btn-creer-cnt-ronly" class="btn btn-default" href="{{ url('eqt_contrat', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
         <a id="btn-creer-cnt" class="btn btn-default" href="#" >Créer</a>
+        {% endif %}
         {% endif %}
     </h2>
     <p id="no-contrat" class="alert alert-warning" >
@@ -342,8 +126,12 @@ is Admin
     <h2>
         Interventions 
         {% if route != 'archives_eqt' %}
+        {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or 
+                is_granted("ROLE_ANIM_PREVENTION") or is_granted("ROLE_ANIM_CHARTESANITAIRE") or 
+                is_granted("ROLE_ANIM_SME") or is_granted("ROLE_RESPONSABLE") or is_granted("ROLE_UTILISATEUR") %}
         <a id="btn-creer-int-ronly" class="btn btn-default" href="{{ url('eqt_intervention', {'id': 1}) }}" style="display:none;" >Créer FAKE</a>
         <a id="btn-creer-int" class="btn btn-default" href="#" >Créer</a>
+        {% endif %}
         {% endif %}
     </h2>
     <p id="no-intervention" class="alert alert-warning" >
@@ -448,20 +236,27 @@ $(document).ready( function () {
                              #                                                   alors on affiche l'ensemble des boutons (création, réforme, etc).
                              #}
                             {% if route != 'archives_eqt' %}
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") %}
                             var btnReformerRonly = $("#btn-reformer-ronly") ;
                             var btnReformer = $("#btn-reformer") ;
                             var reformerLink = btnReformerRonly.attr('href') ;
                             var rLink = reformerLink.substr(0, reformerLink.length - 1) ;
                             rLink += data[ "id" ] ;
                             btnReformer.attr('href', rLink) ;
+                            {% endif %}
                             
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or is_granted("ROLE_ANIM_PREVENTION") %}
                             var btnSupprimerRonly = $("#btn-supprimer-ronly") ;
                             var btnSupprimer = $("#btn-supprimer") ;
                             var supprimerLink = btnSupprimerRonly.attr('href') ;
                             var sLink = supprimerLink.substr(0, supprimerLink.length - 1) ;
                             sLink += data[ "id" ] ;
                             btnSupprimer.attr('href', sLink) ;
+                            {% endif %}
                             
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or 
+                                    is_granted("ROLE_ANIM_PREVENTION") or is_granted("ROLE_ANIM_CHARTESANITAIRE") or 
+                                    is_granted("ROLE_ANIM_SME") or is_granted("ROLE_RESPONSABLE") or is_granted("ROLE_UTILISATEUR") %}
                             var btnCreercntRonly = $("#btn-creer-cnt-ronly") ;
                             var btnCreercnt = $("#btn-creer-cnt") ;
                             var creercntLink = btnCreercntRonly.attr('href') ;
@@ -475,6 +270,7 @@ $(document).ready( function () {
                             var ciLink = creerintLink.substr(0, creerintLink.length - 1) ;
                             ciLink += data[ "id" ] ;
                             btnCreerint.attr('href', ciLink) ;
+                            {% endif %}
                             {% endif %}
                             {# ................................................. Afficher le bouton de téléchargement (même dans les "archives").
                              #}
@@ -571,31 +367,16 @@ $(document).ready( function () {
     /* *************************************************************************
      * Gestion des filtres / de l'export.
      */
-    $("#btn-export").click(function () {
-        $('#form-filtres').attr('action', '{{ url('eqt_export') }}') ;
-        
-    }) ;
     
-    $("#btn-help").click(function (event) {
-        
-        event.preventDefault();
+    $("#filtre_equipement_toexport").val('off') ;
+    $("#filtre_equipement_export").click(function () {
+        $("#filtre_equipement_toexport").val('on') ;
+        $("#filtre_form").submit() ;
     }) ;
     
     $("#containeur-filtres").accordion({
-        collapsible: true{#,
-        active: false#}
-    }) ;
-    
-    $('#garantie_debut').datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "dd-mm-yy"
-    }) ;
-    
-    $('#garantie_fin').datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "dd-mm-yy"
+        collapsible: true,
+        active: false
     }) ;
     
     $('.datepicker').datepicker({

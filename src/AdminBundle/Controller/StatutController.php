@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use UtilisateurBundle\Entity\Statut;
 use AdminBundle\Form\StatutType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class StatutController extends Controller
 {
     /**
      * @Route("/statut/index", name="admin_statut_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class StatutController extends Controller
     }
     /**
      * @Route("/statut/add", name="admin_statut_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class StatutController extends Controller
      *  name="admin_statut_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Statut $statut, Request $request)
     {

@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DechetEquipementBundle\Entity\Categorie;
 use AdminBundle\Form\CategorieType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class CategorieController extends Controller
 {
     /**
      * @Route("/categorie/index", name="admin_categorie_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class CategorieController extends Controller
     }
     /**
      * @Route("/categorie/add", name="admin_categorie_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class CategorieController extends Controller
      *  name="admin_categorie_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Categorie $categorie, Request $request)
     {

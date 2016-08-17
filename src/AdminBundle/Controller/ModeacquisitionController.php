@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use RHBundle\Entity\Modeacquisition;
 use AdminBundle\Form\ModeacquisitionType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ModeacquisitionController extends Controller
 {
     /**
      * @Route("/modeacquisition/index", name="admin_modeacquisition_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class ModeacquisitionController extends Controller
     }
     /**
      * @Route("/modeacquisition/add", name="admin_modeacquisition_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class ModeacquisitionController extends Controller
      *  name="admin_modeacquisition_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Modeacquisition $modeacquisition, Request $request)
     {

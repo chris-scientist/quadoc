@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Mission;
 use AdminBundle\Form\MissionType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class MissionController extends Controller
 {
     /**
      * @Route("/mission/index", name="admin_mission_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class MissionController extends Controller
     }
     /**
      * @Route("/mission/add", name="admin_mission_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class MissionController extends Controller
      *  name="admin_mission_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Mission $mission, Request $request)
     {

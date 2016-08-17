@@ -223,6 +223,58 @@ class Equipement
         return $this->getNom() ;
     }
     
+    static public function getLabels()
+    {
+        $labelArray = array(
+            'nom',
+            'équipe',
+            'responsable',
+            'n série',
+            'acheté le',
+            'fin garantie le',
+            'fournisseur',
+            'marque',
+            'parc',
+            'catégorie',
+            'modèle',
+            'mise en service le',
+            'reformé le',
+            'emplacement',
+            'n immobilisation',
+            'caractéristiques'
+        ) ;
+        return $labelArray ;
+    }
+    
+    public function toArray()
+    {
+        $outArray = array() ;
+        
+        $outArray[] = $this->nom ;
+        $outArray[] = $this->equipe->getNom() ;
+        $outArray[] = $this->responsable->getNom() . ' ' . $this->responsable->getPrenom() ;
+        $outArray[] = $this->nSerie ;
+        $outArray[] = $this->acheteLe->format('d/m/Y') ;
+        $outArray[] = $this->fingarantieLe->format('d/m/Y') ;
+        $outArray[] = $this->fournisseur->getNom() ;
+        $outArray[] = $this->marque->getNom() ;
+        $outArray[] = $this->categorie->getParc()->getNom() ;
+        $outArray[] = $this->categorie->getNom() ;
+        $outArray[] = $this->modele ;
+        $outArray[] = $this->miseenserviceLe->format('d/m/Y') ;
+        $reformeLe = $this->reformeLe ;
+        if( ! is_null($reformeLe) ) {
+            $outArray[] = $reformeLe->format('d/m/Y') ;
+        } else {
+            $outArray[] = '' ;
+        }
+        $outArray[] = $this->emplacement ;
+        $outArray[] = $this->nImmobilisation ;
+        $outArray[] = $this->caracteristiques ;
+        
+        return $outArray ;
+    }
+    
     public function getUploadFichierDir()
     {
         $absolutePath = __DIR__ . '/../../../web/upload/' ;

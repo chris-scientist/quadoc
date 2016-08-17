@@ -53,9 +53,9 @@
                     {{ role }}{% if loop.revindex > 1 %}, {% endif %}
                 {% endfor %}
             </td>
-            <td>{% if utilisateur.locked %}Non{% else %}Oui{% endif %}</td>
+            <td>{% if not utilisateur.enabled %}Non{% else %}Oui{% endif %}</td>
             <td>
-                {% if utilisateur.locked %}
+                {% if not utilisateur.enabled %}
                 <a href="{{ url("admin_utilisateur_unlock", {"id": utilisateur.id }) }}" title="Ré-activer le compte" >
                     <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" style="color:black;" ></span>
                 </a>   

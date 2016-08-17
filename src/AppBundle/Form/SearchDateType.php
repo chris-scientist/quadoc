@@ -17,7 +17,7 @@ class SearchDateType extends AbstractType
         $builder
             ->add('begin_date', DateType::class,
                 array(
-                    'format' => 'ddMMMyyyy',
+                    'format' => 'dd-MM-yyyy',
                     'widget' => 'single_text',
                     'attr' => array(
                         'class' => 'form-control input-inline datepicker',
@@ -27,7 +27,7 @@ class SearchDateType extends AbstractType
                 ))
             ->add('end_date', DateType::class,
                 array(
-                    'format' => 'ddMMMyyyy',
+                    'format' => 'dd-MM-yyyy',
                     'widget' => 'single_text',
                     'attr' => array(
                         'class' => 'form-control input-inline datepicker',

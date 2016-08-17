@@ -87,18 +87,26 @@
                                     <li {% if route == 'dec_show_enlevement' %}class="active"{% endif %} ><a href="{{ url('dec_show_enlevement') }}">Enlèvements</a></li>
                                 </ul>
                             </li>
+                            {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or is_granted("ROLE_ANIM_PREVENTION") 
+                                    or is_granted("ROLE_ANIM_CHARTESANITAIRE") or is_granted("ROLE_ANIM_SME") %}
                             <li class="dropdown{% if route == 'archives_basedoc' or route == 'archives_management' 
                                                     or route == 'archives_eqt' or route == 'archives_cahierlabo' %} active{% endif %}" >
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Archives <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
+                                    {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") %}
                                     <li {% if route == 'archives_basedoc' %}class="active"{% endif %} ><a href="{{ url('archives_basedoc') }}" >Base documentaire</a></li>
+                                    {% endif %}
                                     <li {% if route == 'archives_management' %}class="active"{% endif %} ><a href="{{ url('archives_management') }}">Management</a></li>
+                                    {% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") %}
                                     <li {% if route == 'archives_eqt' %}class="active"{% endif %} ><a href="{{ url('archives_eqt') }}" >Equipements</a></li>
                                     <li {% if route == 'archives_cahierlabo' %}class="active"{% endif %} ><a href="{{ url('archives_cahierlabo') }}">Cahiers de laboratoire</a></li>
-                                    <li><a href="#">Déchets</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
+                            {% endif %}
+                            {% if is_granted("ROLE_ADMIN") %}
                             <li {% if route == 'admin_index' %}class="active"{% endif %} ><a href="{{ url('admin_index') }}">Admin</a></li>
+                            {% endif %}
                             <li>
                                 <a href="{{ url('logout') }}">
                                     <span class="glyphicon glyphicon-log-out" aria-hidden="true" ></span>

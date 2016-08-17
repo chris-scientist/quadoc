@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DechetEquipementBundle\Entity\Marque;
 use AdminBundle\Form\MarqueType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class MarqueController extends Controller
 {
     /**
      * @Route("/marque/index", name="admin_marque_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class MarqueController extends Controller
     }
     /**
      * @Route("/marque/add", name="admin_marque_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class MarqueController extends Controller
      *  name="admin_marque_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Marque $marque, Request $request)
     {

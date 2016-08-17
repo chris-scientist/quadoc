@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Typedocument;
 use AdminBundle\Form\TypedocumentType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TypedocumentController extends Controller
 {
     /**
      * @Route("/typedocument/index", name="admin_typedocument_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class TypedocumentController extends Controller
     }
     /**
      * @Route("/typedocument/add", name="admin_typedocument_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class TypedocumentController extends Controller
      *  name="admin_typedocument_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Typedocument $typedocument, Request $request)
     {

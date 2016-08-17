@@ -12,11 +12,13 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class UtilisateurController extends Controller
 {
     /**
      * @Route("/utilisateur/index", name="admin_utilisateur_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -31,6 +33,7 @@ class UtilisateurController extends Controller
     }
     /**
      * @Route("/utilisateur/add", name="admin_utilisateur_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -70,6 +73,7 @@ class UtilisateurController extends Controller
      *  name="admin_utilisateur_update",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function updateAction(Utilisateur $utilisateur, Request $request)
     {
@@ -96,6 +100,7 @@ class UtilisateurController extends Controller
      *  name="admin_utilisateur_password",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function setPasswordAction(Utilisateur $utilisateur, Request $request)
     {
@@ -139,6 +144,7 @@ class UtilisateurController extends Controller
      *  name="admin_utilisateur_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Utilisateur $utilisateur, Request $request)
     {
@@ -154,6 +160,7 @@ class UtilisateurController extends Controller
      *  name="admin_utilisateur_lock",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function lockAction(Utilisateur $utilisateur, Request $request)
     {
@@ -169,6 +176,7 @@ class UtilisateurController extends Controller
      *  name="admin_utilisateur_unlock",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function unlockAction(Utilisateur $utilisateur, Request $request)
     {

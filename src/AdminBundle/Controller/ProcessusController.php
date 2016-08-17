@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Processus;
 use AdminBundle\Form\ProcessusType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ProcessusController extends Controller
 {
     /**
      * @Route("/processus/index", name="admin_processus_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class ProcessusController extends Controller
     }
     /**
      * @Route("/processus/add", name="admin_processus_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class ProcessusController extends Controller
      *  name="admin_processus_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Processus $processus, Request $request)
     {

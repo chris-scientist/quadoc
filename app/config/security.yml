@@ -29,23 +29,6 @@ security:
             remember_me:
                 secret: %secret%
             
-#            pattern:   ^/
-#            form_login:
-#                provider:     fos_userbundle
-#                csrf_token_generator:   security.csrf.token_manager
-#                login_path:  /login
-##                login_path:  /
-#                always_use_default_target_path: true
-#                default_target_path:            /
-#                target_path_parameter:          _target_path
-#            logout:        true
-#            anonymous:     true
-#            remember_me:
-#                secret:         %secret%
-            #anonymous: ~
-            
-            # activate different ways to authenticate
-
             # http_basic: ~
             # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
 
@@ -54,8 +37,13 @@ security:
     
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/, roles: ROLE_USER } # TODO Uncomment to active authenticate !
-#    role_hierarchy:
-#        ROLE_ADMIN:       ROLE_USER
-#        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        - { path: ^/, roles: ROLE_USER }
+    role_hierarchy:
+        ROLE_UTILISATEUR: ROLE_VISITEUR
+        ROLE_RH:          ROLE_VISITEUR
+        ROLE_ANIM_SME:    ROLE_VISITEUR
+        ROLE_ANIM_CHARTESANITAIRE: ROLE_VISITEUR
+        ROLE_ANIM_PREVENTION: ROLE_VISITEUR
+        ROLE_RESPONSABLE: ROLE_UTILISATEUR
+        ROLE_ANIM_QUALITE: ROLE_RESPONSABLE, ROLE_RH, ROLE_ANIM_SME, ROLE_ANIM_CHARTESANITAIRE, ROLE_ANIM_PREVENTION
+        ROLE_ADMIN:       ROLE_ANIM_QUALITE

@@ -15,48 +15,74 @@ use DechetEquipementBundle\Form\EquipementType;
 use DechetEquipementBundle\Form\ContratType;
 use DechetEquipementBundle\Form\InterventionType;
 use DechetEquipementBundle\Form\FiltreEquipementType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class EquipementController extends SearchController
 {
-    const CONST_NOM = "nom" ;
-    const CONST_OP_NOM = "operateur_nom" ;
-    const CONST_GARANTIE_DEBUT = "garantie_debut" ;
-    const CONST_GARANTIE_FIN = "garantie_fin" ;
     const CONST_OPTXT_LIKE = "like" ;
     const CONST_OPTXT_EQUALTO = "equal_to" ;
+    const CONST_NOM = "nom" ;
+    const CONST_EMPLACEMENT = "emplacement" ;
+    const CONST_ACHETE_DEBUT = "achete_debut" ;
+    const CONST_ACHETE_FIN = "achete_fin" ;
+    const CONST_GARANTIE_DEBUT = "garantie_debut" ;
+    const CONST_GARANTIE_FIN = "garantie_fin" ;
+    const CONST_MES_DEBUT = "mse_debut" ;
+    const CONST_MES_FIN = "mse_fin" ;
+    const CONST_REFORME_DEBUT = "reforme_debut" ;
+    const CONST_REFORME_FIN = "reforme_fin" ;
     
     public function __construct()
     {
         parent::__construct();
-        
-        $this->addNamesUrlParameters(self::CONST_NOM, self::CONST_NOM) ;
-        $this->addNamesUrlParameters(self::CONST_OP_NOM, self::CONST_OP_NOM) ;
-        $this->addNamesUrlParameters(self::CONST_GARANTIE_DEBUT, self::CONST_GARANTIE_DEBUT) ;
-        $this->addNamesUrlParameters(self::CONST_GARANTIE_FIN, self::CONST_GARANTIE_FIN) ;
     }
     /**
      * @Route("/equipement/index", name="eqt_index")
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager() ;
-        $repEqt = $em->getRepository("DechetEquipementBundle:Equipement") ;
         
-        // Récupérer les équipements actifs (non réformés).
+        // [Début de la requête] Récupérer les équipements actifs (non réformés).
         $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
-        $dql .= $this->addKeyword() . $this->addConstraintIsNull('e.reformeLe', true, true) ; // ................. Filtrer les équipements réformés.
+        $dql .= $this->addKeyword() . $this->addConstraintIsNull('e.reformeLe', true) ; // ................. Filtrer les équipements réformés.
         
-        $form = $this->createForm(FiltreEquipementType::class) ;
+        $form = $this->createForm(FiltreEquipementType::class) ; // ................ création du formulaire des filtres
         $form->handleRequest($request) ;
         
+        $this->initCombinationFlag($form) ; // [à ne pas oublier] permet de combiner les contraintes entre elles, et/ou du formulaire.
+        // Récupération des valeurs saisies par l'utilisateur.
         $nom = $form['nom']['searched_value']->getData() ;
         $nomFiltre = ( ! is_null($nom) ) ;
+        $emplacement = $form['emplacement']['searched_value']->getData() ;
+        $emplacementFiltre = ( ! is_null($emplacement) ) ;
+        $categories = $form['categorie']->getData() ;
+        $acheteBgn = $form['achete_le']['begin_date']->getData() ;
+        $acheteEnd = $form['achete_le']['end_date']->getData() ;
+        $acheteBgnFiltre = ( ! is_null($acheteBgn) ) ;
+        $acheteEndFiltre = ( ! is_null($acheteEnd) ) ;
+        $equipes = $form['equipe']->getData() ;
+        $garantieBgn = $form['fingarantie_le']['begin_date']->getData() ;
+        $garantieEnd = $form['fingarantie_le']['end_date']->getData() ;
+        $garantieBgnFiltre = ( ! is_null($garantieBgn) ) ;
+        $garantieEndFiltre = ( ! is_null($garantieEnd) ) ;
+        $marques = $form['marque']->getData() ;
+        $miseenserviceBgn = $form['miseenservice_le']['begin_date']->getData() ;
+        $miseenserviceEnd = $form['miseenservice_le']['end_date']->getData() ;
+        $miseenserviceBgnFiltre = ( ! is_null($miseenserviceBgn) ) ;
+        $miseenserviceEndFiltre = ( ! is_null($miseenserviceEnd) ) ;
+        $fournisseurs = $form['fournisseur']->getData() ;
+        $reformeBgn = $form['reforme_le']['begin_date']->getData() ;
+        $reformeEnd = $form['reforme_le']['end_date']->getData() ;
+        $reformeBgnFiltre = ( ! is_null($reformeBgn) ) ;
+        $reformeEndFiltre = ( ! is_null($reformeEnd) ) ;
         
-        if($form->isValid())
+        if($form->isValid()) // Lorsque le formulaire est validé.
         {
-            if( $nomFiltre )
+            if( $nomFiltre ) // [Recherche textuelle] Si un filtre existe sur le nom.
             {
-                $opNom =  $form['nom']['op_text']->getData() ;
+                $opNom = $form['nom']['op_text']->getData() ; // Récupérer le type de recherche : égale à ou contient.
                 if( $opNom == self::CONST_OPTXT_EQUALTO )
                 {
                     $constraint = $this->addConstraintTextEqualTo('e.nom', self::CONST_NOM) ;
@@ -66,8 +92,116 @@ class EquipementController extends SearchController
                     $constraint = $this->addConstraintLike('e.nom', self::CONST_NOM) ;
                     $nom = $this->addLikeValue($nom) ;
                 }
+                $this->addConstraint( $constraint ) ; // Ajouter la contrainte à la requête.
+            }
+            
+            if( $emplacementFiltre )
+            {
+                $opEmplacement = $form['emplacement']['op_text']->getData() ;
+                if( $opEmplacement == self::CONST_OPTXT_EQUALTO )
+                {
+                    $constraint = $this->addConstraintTextEqualTo('e.emplacement', self::CONST_EMPLACEMENT) ;
+                }
+                else if( $opEmplacement == self::CONST_OPTXT_LIKE )
+                {
+                    $constraint = $this->addConstraintLike('e.emplacement', self::CONST_EMPLACEMENT) ;
+                    $emplacement = $this->addLikeValue($emplacement) ;
+                }
                 $this->addConstraint( $constraint ) ;
             }
+            
+            if( count($categories) > 0 ) // [Recherche parmis une liste] Si un filtre existe sur les catégories.
+            {
+                $constraint = $this->addConstraintIn('e.categorie', $categories) ;
+                $this->addConstraint($constraint) ;
+            }
+            
+            if( $acheteBgnFiltre || $acheteEndFiltre ) // [Recherche temporelle] Si au moins une date d'achat est renseignée.
+            {
+                if( $acheteBgnFiltre && ! $acheteEndFiltre ) // Seule la date de début est renseignée, on recherche les équipements achetés "depuis" la date fournie.
+                {
+                    $constraint = $this->addConstraintFromDate('e.acheteLe', self::CONST_ACHETE_DEBUT) ;
+                }
+                else if( $acheteEndFiltre && ! $acheteBgnFiltre ) // Seule la date de fin est renseignée, on recherche les équipements achetés "jusqu'à" la date fournie.
+                {
+                    $constraint = $this->addConstraintToDate('e.acheteLe', self::CONST_ACHETE_FIN) ;
+                }
+                else // Deux dates sont renseignées, on recherche les équipements achetés "entre" ces deux dates.
+                {
+                    $constraint = $this->addConstraintDateBtw('e.acheteLe', self::CONST_ACHETE_DEBUT, self::CONST_ACHETE_FIN) ;
+                }
+                $this->addConstraint( $constraint ) ;
+            }
+            
+            if( count($equipes) > 0 )
+            {
+                $constraint = $this->addConstraintIn('e.equipe', $equipes) ;
+                $this->addConstraint($constraint) ;
+            }
+            
+            if( $garantieBgnFiltre || $garantieEndFiltre )
+            {
+                if( $garantieBgnFiltre && ! $garantieEndFiltre )
+                {
+                    $constraint = $this->addConstraintFromDate('e.fingarantieLe', self::CONST_GARANTIE_DEBUT) ;
+                }
+                else if( $garantieEndFiltre && ! $garantieBgnFiltre )
+                {
+                    $constraint = $this->addConstraintToDate('e.fingarantieLe', self::CONST_GARANTIE_FIN) ;
+                }
+                else
+                {
+                    $constraint = $this->addConstraintDateBtw('e.fingarantieLe', self::CONST_GARANTIE_DEBUT, self::CONST_GARANTIE_FIN) ;
+                }
+                $this->addConstraint( $constraint ) ;
+            }
+            
+            if( count($marques) > 0 )
+            {
+                $constraint = $this->addConstraintIn('e.marque', $marques) ;
+                $this->addConstraint($constraint) ;
+            }
+            
+            if( $miseenserviceBgnFiltre || $miseenserviceEndFiltre )
+            {
+                if( $miseenserviceBgnFiltre && ! $miseenserviceEndFiltre )
+                {
+                    $constraint = $this->addConstraintFromDate('e.miseenserviceLe', self::CONST_MES_DEBUT) ;
+                }
+                else if( $miseenserviceEndFiltre && ! $miseenserviceBgnFiltre )
+                {
+                    $constraint = $this->addConstraintToDate('e.miseenserviceLe', self::CONST_MES_FIN) ;
+                }
+                else
+                {
+                    $constraint = $this->addConstraintDateBtw('e.miseenserviceLe', self::CONST_MES_DEBUT, self::CONST_MES_FIN) ;
+                }
+                $this->addConstraint( $constraint ) ;
+            }
+            
+            if( count($fournisseurs) > 0 )
+            {
+                $constraint = $this->addConstraintIn('e.fournisseur', $fournisseurs) ;
+                $this->addConstraint($constraint) ;
+            }
+            
+            if( $reformeBgnFiltre || $reformeEndFiltre )
+            {
+                if( $reformeBgnFiltre && ! $reformeEndFiltre )
+                {
+                    $constraint = $this->addConstraintFromDate('e.reformeLe', self::CONST_REFORME_DEBUT) ;
+                }
+                else if( $reformeEndFiltre && ! $reformeBgnFiltre )
+                {
+                    $constraint = $this->addConstraintToDate('e.reformeLe', self::CONST_REFORME_FIN) ;
+                }
+                else
+                {
+                    $constraint = $this->addConstraintDateBtw('e.reformeLe', self::CONST_REFORME_DEBUT, self::CONST_REFORME_FIN) ;
+                }
+                $this->addConstraint( $constraint ) ;
+            }
+            
             $dql .= $this->getConstraintsToText() ;
         }
         
@@ -75,132 +209,104 @@ class EquipementController extends SearchController
         if( $nomFiltre ) {
             $query->setParameter(self::CONST_NOM, $nom) ;
         }
+        if( $emplacementFiltre ) {
+            $query->setParameter(self::CONST_EMPLACEMENT, $emplacement) ;
+        }
+        if( $acheteBgnFiltre || $acheteEndFiltre )
+        {
+            if( $acheteBgnFiltre && ! $acheteEndFiltre )
+            {
+                $query->setParameter(self::CONST_ACHETE_DEBUT, $acheteBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else if( $acheteEndFiltre && ! $acheteBgnFiltre )
+            {
+                $query->setParameter(self::CONST_ACHETE_FIN, $acheteEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else
+            {
+                $query->setParameter(self::CONST_ACHETE_DEBUT, $acheteBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+                $query->setParameter(self::CONST_ACHETE_FIN, $acheteEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+        }
+        if( $garantieBgnFiltre || $garantieEndFiltre )
+        {
+            if( $garantieBgnFiltre && ! $garantieEndFiltre )
+            {
+                $query->setParameter(self::CONST_GARANTIE_DEBUT, $garantieBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else if( $garantieEndFiltre && ! $garantieBgnFiltre )
+            {
+                $query->setParameter(self::CONST_GARANTIE_FIN, $garantieEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else
+            {
+                $query->setParameter(self::CONST_GARANTIE_DEBUT, $garantieBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+                $query->setParameter(self::CONST_GARANTIE_FIN, $garantieEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+        }
+        if( $miseenserviceBgnFiltre || $miseenserviceEndFiltre )
+        {
+            if( $miseenserviceBgnFiltre && ! $miseenserviceEndFiltre )
+            {
+                $query->setParameter(self::CONST_MES_DEBUT, $miseenserviceBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else if( $miseenserviceEndFiltre && ! $miseenserviceBgnFiltre )
+            {
+                $query->setParameter(self::CONST_MES_FIN, $miseenserviceEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else
+            {
+                $query->setParameter(self::CONST_MES_DEBUT, $miseenserviceBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+                $query->setParameter(self::CONST_MES_FIN, $miseenserviceEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+        }
+        if( $reformeBgnFiltre || $reformeEndFiltre )
+        {
+            if( $reformeBgnFiltre && ! $reformeEndFiltre )
+            {
+                $query->setParameter(self::CONST_REFORME_DEBUT, $reformeBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else if( $reformeEndFiltre && ! $reformeBgnFiltre )
+            {
+                $query->setParameter(self::CONST_REFORME_FIN, $reformeEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+            else
+            {
+                $query->setParameter(self::CONST_REFORME_DEBUT, $reformeBgn, \Doctrine\DBAL\Types\Type::DATETIME) ;
+                $query->setParameter(self::CONST_REFORME_FIN, $reformeEnd, \Doctrine\DBAL\Types\Type::DATETIME) ;
+            }
+        }
+        
         $equipements = $query->getResult() ;
+        
+        $export = $form['toexport']->getData() ;
+        
+        if( $export == "on" ) // Exporter les données filtrées.
+        {
+            $path = __DIR__ . '/../../../web/download/' ;
+            $filename = time() . '.csv' ;
+            $csvFile = new \Keboola\Csv\CsvFile($path . $filename, ";", "") ;
+            $csvFile->writeRow( Equipement::getLabels() ) ;
+            foreach ( $equipements as $equipement ) {
+                $csvFile->writeRow( $equipement->toArray() ) ;
+            }
+            
+            $response = new Response() ;
+            $response->setContent(file_get_contents($path . $filename)) ;
+            $response->headers->set('Content-Type', 'application/force-download') ;
+            $response->headers->set('Content-disposition', 'filename=' . $filename) ;
+
+            return $response ;
+        }
         
         return $this->render('equipement/index.html.twig', array(
             'equipements' => $equipements,
             'form' => $form->createView()
         ) ) ;
     }
-    
-    protected function buildAdvancedQuery(Request $request, $form, $dql)
-    {
-//            $val = $form['nom']['searched_value']->getData() ;
-//            $val = $form['nom']['op_text']->getData() ;
-//            $val = $form['achete_le']['begin_date']->getData() ;
-//            dump($val) ;
-        $nom = $form['nom']['searched_value']->getData() ;
-        if( ! is_null($nom) )
-        {
-            $opNom =  $form['nom']['op_text']->getData() ;
-            if( $opNom == self::CONST_OPTXT_EQUALTO )
-            {
-                $constraint = $this->addConstraintTextEqualTo(self::CONST_NOM, self::CONST_NOM) ;
-            }
-            else if( $opNom == self::CONST_OPTXT_LIKE )
-            {
-                $constraint = $this->addConstraintLike(self::CONST_NOM, self::CONST_NOM) ;
-            }
-            $this->addConstraint( $constraint ) ;
-            $dql->setParameter(self::CONST_NOM, $nom) ;
-        }
-    }
-
-
-    protected function searchQuery(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager() ;
-        $this->initUrlParameters($request) ;
-        // ..................................................................... Construire et exécuter la requête.
-        $urlParameters = $this->getUrlParameters() ;
-        $dql = 'SELECT e FROM DechetEquipementBundle:Equipement e ' ;
-        $dql .= $this->addConstraintIsNull('e.reformeLe') ; // ................. Filtrer les équipements réformés.
-        if( $this->parametersExists(self::CONST_NOM) )
-        {
-            $nom = $urlParameters[ self::CONST_NOM ] ;
-            $operateurNom = $urlParameters[ self::CONST_OP_NOM ] ;
-            if( $operateurNom == "like" )
-            {
-                $dql .= $this->addConstraintLike('e.nom', 'nom') ; // .......... Filtrer les noms ressemblant à une valeur donnée.
-                $this->addQueryParameter('nom', $this->addLikeValue($nom)) ;
-            }
-            else if( $operateurNom == "equal" )
-            {
-                $dql .= $this->addConstraintTextEqualTo('e.nom', 'nom') ; // ... Filtrer les noms équivalent à une valeur donnée.
-                $this->addQueryParameter('nom', $nom) ;
-            }
-        }
-        if( $this->parametersExists(self::CONST_GARANTIE_DEBUT) || $this->parametersExists(self::CONST_GARANTIE_FIN) )
-        {
-            $dql .= $this->addConstraintDateBtw("e.fingarantieLe", "garantie_debut", "garantie_fin") ;
-            $this->addQueryParameterDate("garantie_debut", $urlParameters[ self::CONST_GARANTIE_DEBUT ]) ;
-            $this->addQueryParameterDate("garantie_fin", $urlParameters[ self::CONST_GARANTIE_FIN ]) ;
-        }
-        $query = $em->createQuery($dql) ;
-        $this->addQueryParameters($query) ;
-        return $query ;
-    }
-    /**
-     * @Route("/intervention/export", name="eqt_export")
-     */
-    public function exportAction(Request $request)
-    {
-//        $query = $this->query($request) ;
-////        $equipements = $query->getResult() ;
-//        dump($query instanceof \Doctrine\ORM\QueryBuilder) ;
-//        dump($query instanceof \Doctrine\DBAL\Query\QueryBuilder) ;
-//        dump($query instanceof \Doctrine\ORM\Query) ;
-//        $delimiter = ";" ;
-//        $itResult = $query->getQuery()->iterate() ;
-//        $handle = fopen('php://memory', 'r+') ;
-//        $header = array() ;
-//        
-//        while( false !== ($row = $itResult->next()) )
-//        {
-//            fputcsv($handle, $row[0], $delimiter) ;
-//            dump($row) ;
-//        }
-//        rewind($handle) ;
-//        $content = stream_get_contents($handle) ;
-//        fclose($handle) ;
-//        
-//        return new Response($content, 200, array(
-//            'Content-Type' => 'application/force-download',
-//            'Content-Disposition' => 'attachment; filename="export.csv"'
-//        )) ;
-        
-        
-        // ..................................................................... Récupérer les paramètres (filtres) envoyés dans l'URL
-        $nom = $request->query->get('nom') ;
-        $operateurNom = $request->query->get('operator_nom') ;
-        $garantieDebut = $request->query->get('garantie_debut') ;
-        $garantieFin = $request->query->get('garantie_fin') ;
-        
-        $urlParameters = array() ;
-        if( $nom != "" ) {
-            $urlParameters[ "nom" ] = $nom ;
-        }
-        
-        $query = $this->searchQuery($request) ;
-        $equipements = $query->getResult() ;
-//        dump($equipements) ;
-        return $this->redirectToRoute("eqt_search", $urlParameters) ;
-    }
-    
-    /**
-     * @Route("/intervention/search", name="eqt_search")
-     */
-    public function searchAction(Request $request)
-    {
-        $query = $this->searchQuery($request) ;
-        $equipements = $query->getResult() ;
-        
-        return $this->render('equipement/index.html.twig', array(
-            'equipements' => $equipements
-        ) ) ;
-    }
     /**
      * @Route("/intervention/index", name="eqt_show_intervention")
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function showInterventionAction()
     {
@@ -218,6 +324,7 @@ class EquipementController extends SearchController
     }
     /**
      * @Route("/equipement/contrat/", name="eqt_show_contrat")
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function showContratAction()
     {
@@ -237,6 +344,7 @@ class EquipementController extends SearchController
     }
     /**
      * @Route("/equipement/add", name="eqt_add")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION') or has_role('ROLE_ANIM_CHARTESANITAIRE') or has_role('ROLE_ANIM_SME') or has_role('ROLE_RESPONSABLE') or has_role('ROLE_UTILISATEUR')")
      */
     public function addAction(Request $request)
     {
@@ -274,6 +382,7 @@ class EquipementController extends SearchController
      *  name="eqt_contrat",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION') or has_role('ROLE_ANIM_CHARTESANITAIRE') or has_role('ROLE_ANIM_SME') or has_role('ROLE_RESPONSABLE') or has_role('ROLE_UTILISATEUR')")
      */
     public function addContratAction(Equipement $eqt, Request $request)
     {
@@ -305,6 +414,7 @@ class EquipementController extends SearchController
      *  name="eqt_intervention",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION') or has_role('ROLE_ANIM_CHARTESANITAIRE') or has_role('ROLE_ANIM_SME') or has_role('ROLE_RESPONSABLE') or has_role('ROLE_UTILISATEUR')")
      */
     public function addInterventionAction(Equipement $eqt, Request $request)
     {
@@ -340,6 +450,7 @@ class EquipementController extends SearchController
      *  name="eqt_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION')")
      */
     public function remove(Equipement $eqt, Request $request)
     {
@@ -365,6 +476,7 @@ class EquipementController extends SearchController
      *  name="eqt_dl_intervention",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function downloadInterventionAction(Intervention $int, Request $request)
     {
@@ -384,6 +496,7 @@ class EquipementController extends SearchController
      *  name="eqt_dl_equipement",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function downloadEquipementAction(Equipement $eqt, Request $request)
     {
@@ -407,6 +520,7 @@ class EquipementController extends SearchController
      *  name="eqt_info",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_VISITEUR')")
      * @Method({"GET"})
      */
     public function infoAction(Equipement $eqt, Request $request)
@@ -487,6 +601,7 @@ class EquipementController extends SearchController
      *  name="eqt_reformer",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE')")
      */
     public function archiverAction(Equipement $eqt, Request $request)
     {
@@ -499,6 +614,7 @@ class EquipementController extends SearchController
     }
     /**
      * @Route("/archives/equipement", name="archives_eqt")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE')")
      */
     public function archiveAction()
     {

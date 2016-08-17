@@ -5,7 +5,7 @@
 {% block body %}
 {% if route != 'archives_basedoc' %}
 <p>
-    <a class="btn btn-default" href="{{ url('basedoc_add') }}" >Créer document</a>
+    <a class="btn btn-success" href="{{ url('basedoc_add') }}" >Créer document</a>
 </p>
 {% endif %}
 {% if (docs|length) > 0 %}

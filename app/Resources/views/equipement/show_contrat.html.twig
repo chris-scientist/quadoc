@@ -3,9 +3,13 @@
 {# ***************************************************************************** Bloc body
  #}
 {% block body %}
+{% if is_granted("ROLE_ADMIN") or is_granted("ROLE_ANIM_QUALITE") or 
+        is_granted("ROLE_ANIM_PREVENTION") or is_granted("ROLE_ANIM_CHARTESANITAIRE") or 
+        is_granted("ROLE_ANIM_SME") or is_granted("ROLE_RESPONSABLE") or is_granted("ROLE_UTILISATEUR") %}
 <p>
-    <a class="btn btn-default" href="{{ url('cnt_equipement_add') }}" >Créer contrat</a>
+    <a class="btn btn-success" href="{{ url('cnt_equipement_add') }}" >Créer contrat</a>
 </p>
+{% endif %}
 {% if (contrats|length) > 0 %}
 <table class="table table-striped display" id="table_cnt" >
     <thead>

@@ -7,7 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+//use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 
 //
@@ -26,9 +27,14 @@ abstract class FilterType extends AbstractType
                     )/*,
                     'label' => 'Combinaison des filtres'*/
                 ))
+            ->add('toexport', HiddenType::class,
+                    array(
+                        'data' => "off"
+                    )
+                )
             ->add('export', ButtonType::class)
-            ->add('help', ButtonType::class)
-            ->add('reset', ResetType::class)
+//            ->add('help', ButtonType::class)
+//            ->add('reset', ResetType::class)
             ->add('save', SubmitType::class) ;
     }
 }

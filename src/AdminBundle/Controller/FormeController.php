@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Forme;
 use AdminBundle\Form\FormeType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class FormeController extends Controller
 {
     /**
      * @Route("/forme/index", name="admin_forme_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class FormeController extends Controller
     }
     /**
      * @Route("/forme/add", name="admin_forme_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class FormeController extends Controller
      *  name="admin_forme_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Forme $forme, Request $request)
     {

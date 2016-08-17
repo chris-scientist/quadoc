@@ -1,0 +1,16 @@
+{# Copyright 2016 C. Thubert #}
+
+{% if ajouterBtn is defined and ajouterBtn == true %}
+    {% set labelBtnSave = 'Ajouter' %}
+{% else %}
+    {% set labelBtnSave = 'Créer' %}
+{% endif %}
+
+<div class="row" style="margin-top:10px;" >
+    <div class="col-md-1" >
+        {{ form_row(form.reset, { 'attr' : {'class':'btn btn-default'}, 'label' : 'Annuler' }) }}
+    </div>
+    <div class="col-md-1" >
+        {{ form_row(form.save, { 'attr' : {'class':'btn btn-success'}, 'label' : labelBtnSave }) }}
+    </div>
+</div>

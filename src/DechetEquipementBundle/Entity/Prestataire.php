@@ -25,7 +25,7 @@ class Prestataire
     /**
      * @var string
      *
-     * @ORM\Column(name="pre_nom", type="string", length=32, unique=true)
+     * @ORM\Column(name="pre_nom", type="string", length=255, unique=true)
      */
     private $nom;
 

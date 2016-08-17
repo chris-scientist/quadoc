@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use UtilisateurBundle\Entity\Equipe;
 use AdminBundle\Form\EquipeType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class EquipeController extends Controller
 {
     /**
      * @Route("/equipe/index", name="admin_equipe_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class EquipeController extends Controller
     }
     /**
      * @Route("/equipe/add", name="admin_equipe_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class EquipeController extends Controller
      *  name="admin_equipe_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Equipe $equipe, Request $request)
     {

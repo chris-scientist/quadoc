@@ -13,11 +13,13 @@ use DechetEquipementBundle\Form\ContratType;
 use DechetEquipementBundle\Repository\EquipementRepository;
 use DechetEquipementBundle\Repository\DechetRepository;
 use DechetEquipementBundle\Entity\Contrat;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ContratController extends Controller
 {
     /**
      * @Route("/equipement/contrat/add", name="cnt_equipement_add")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION') or has_role('ROLE_ANIM_CHARTESANITAIRE') or has_role('ROLE_ANIM_SME') or has_role('ROLE_RESPONSABLE') or has_role('ROLE_UTILISATEUR')")
      */
     public function addCntEquipementAction(Request $request)
     {
@@ -98,6 +100,7 @@ class ContratController extends Controller
      *  name="cnt_dl",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_VISITEUR')")
      */
     public function downloadContratAction(Contrat $cnt, Request $request)
     {

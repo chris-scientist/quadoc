@@ -10,11 +10,13 @@ use DechetEquipementBundle\Entity\Intervention;
 use DechetEquipementBundle\Form\InterventionType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use DechetEquipementBundle\Repository\EquipementRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class InterventionController extends Controller
 {
     /**
      * @Route("/intervention/add", name="int_add")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_ANIM_QUALITE') or has_role('ROLE_ANIM_PREVENTION') or has_role('ROLE_ANIM_CHARTESANITAIRE') or has_role('ROLE_ANIM_SME') or has_role('ROLE_RESPONSABLE') or has_role('ROLE_UTILISATEUR')")
      */
     public function addAction(Request $request)
     {

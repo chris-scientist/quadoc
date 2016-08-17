@@ -8,11 +8,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use DocumentBundle\Entity\Support;
 use AdminBundle\Form\SupportType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class SupportController extends Controller
 {
     /**
      * @Route("/support/index", name="admin_support_index")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function indexAction()
     {
@@ -27,6 +29,7 @@ class SupportController extends Controller
     }
     /**
      * @Route("/support/add", name="admin_support_add")
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function addAction(Request $request)
     {
@@ -55,6 +58,7 @@ class SupportController extends Controller
      *  name="admin_support_remove",
      *  requirements={ "id": "\d+" }
      * )
+     * @Security("has_role('ROLE_ADMIN')")
      */
     public function removeAction(Support $support, Request $request)
     {

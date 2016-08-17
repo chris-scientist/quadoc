@@ -1,0 +1,48 @@
+{# Copyright 2016 C. Thubert #}
+
+<div id="containeur-filtres" style="margin-bottom: 10px;" >
+    <h3>Filtres et export</h3>
+    <div> {# Panel N°1 #}
+        {{ form_start(form, { 'attr': { 'id': 'filtre_form'} }) }}
+            {# ***************************************************************** New line
+             #}
+            <div class="row filter-line" >
+                {# ------------------------------------------------------------- Combinaison des filtres (et / ou)
+                 #}
+                <div class="col-md-3" >
+                    {{ form_row(form.combination, { 'label': 'Combinaison des filtres' }) }}
+                </div>
+            </div>
+            {# ***************************************************************** New line = Import partie non générique
+             #}
+            {% if filenameOfNoGenericForm is defined %}{% include 'filter/' ~ filenameOfNoGenericForm %}{% endif %}
+            {# ***************************************************************** New line
+             #}
+            <div class="row" >
+                {# ------------------------------------------------------------- Bouton: Annuler
+                 #}
+                {#<div class="col-md-1" >
+                    {{ form_row(form.reset, { 'attr' : {'class':'btn btn-danger', 'style': 'width: 80px;'}, 'label' : 'Annuler' }) }}
+                </div>#}
+                {# ------------------------------------------------------------- Bouton: Filter
+                 #}
+                <div class="col-md-1" >
+                    {{ form_row(form.save, { 'attr' : {'class':'btn btn-warning', 'style': 'width: 80px;'}, 'label' : 'Filtrer' }) }}
+                </div>
+                {# ------------------------------------------------------------- Bouton: Exporter
+                 #}
+                <div class="col-md-1" >
+                    {{ form_row(form.export, { 'attr' : {'class':'btn btn-primary', 'style': 'width: 80px;'}, 'label' : 'Exporter' }) }}
+                </div>
+                {# ------------------------------------------------------------- Bouton: Aide
+                 #}
+                {#<div class="col-md-1" >
+                    {{ form_row(form.help, { 'attr' : {'class':'btn btn-info', 'style': 'width: 80px;'}, 'label' : 'Aide' }) }}
+                </div>#}
+            </div>
+        {{ form_widget(form.toexport) }}
+        {{ form_widget(form._token) }}
+{#        {{ form_rest(form) }}#}
+        {{ form_end(form, {'render_rest': false }) }}
+    </div>
+</div>

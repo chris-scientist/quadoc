@@ -26,8 +26,8 @@ class Dechet
     /**
      * @var string
      *
-     * @ORM\Column(name="dec_nom", type="string", length=32, unique=true)
-     * @Assert\Length(max=32)
+     * @ORM\Column(name="dec_nom", type="string", length=255, unique=true)
+     * @Assert\Length(max=255)
      * @Assert\NotBlank()
      */
     private $nom;
